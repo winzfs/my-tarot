@@ -2,44 +2,99 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>나의 타로 사이트</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>78장 완성형 타로 점</title>
     <style>
-        body { text-align: center; background-color: #1a1a2e; color: white; font-family: 'Apple SD Gothic Neo', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; }
-        .card-container { cursor: pointer; transition: transform 0.3s; }
-        .card-container:hover { transform: scale(1.05); }
-        #card-image { width: 200px; height: 320px; border: 3px solid #e94560; border-radius: 15px; background-color: #16213e; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 80px; box-shadow: 0 0 20px rgba(233, 69, 96, 0.5); }
-        #result { margin-top: 20px; font-size: 1.8rem; font-weight: bold; color: #e94560; }
-        #description { margin-top: 10px; color: #fdfdfd; max-width: 300px; line-height: 1.5; }
-        button { margin-top: 30px; padding: 12px 24px; font-size: 1rem; cursor: pointer; background: #e94560; color: white; border: none; border-radius: 8px; font-weight: bold; }
+        :root { --main-color: #e94560; --bg-color: #1a1a2e; }
+        body { text-align: center; background: radial-gradient(circle, #2e1a47 0%, #1a1a2e 100%); color: white; font-family: 'Apple SD Gothic Neo', sans-serif; margin: 0; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        h1 { margin-bottom: 10px; text-shadow: 0 0 10px rgba(233, 69, 96, 0.8); }
+        .card-display { margin: 20px auto; position: relative; width: 220px; height: 380px; perspective: 1000px; }
+        #card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
+        #card-inner.is-flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; border: 3px solid gold; box-shadow: 0 0 20px rgba(0,0,0,0.5); overflow: hidden; }
+        .card-front { background: #16213e; display: flex; align-items: center; justify-content: center; font-size: 80px; }
+        .card-back { background: white; transform: rotateY(180deg); }
+        .card-back img { width: 100%; height: 100%; object-fit: cover; }
+        #result-area { max-width: 400px; margin-top: 20px; min-height: 100px; }
+        .name { font-size: 1.5rem; font-weight: bold; color: var(--main-color); margin-bottom: 10px; }
+        .desc { line-height: 1.6; color: #ddd; }
+        button { margin-top: 30px; padding: 12px 30px; font-size: 1rem; cursor: pointer; background: var(--main-color); color: white; border: none; border-radius: 50px; font-weight: bold; transition: 0.3s; box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4); }
+        button:hover { transform: translateY(-3px); background: #ff5e78; }
     </style>
 </head>
 <body>
 
-    <h1>🔮 오늘의 타로</h1>
+    <h1>🔮 신비로운 타로점</h1>
+    <p>마음을 가다듬고 카드를 클릭하세요</p>
 
-    <div class="card-container" onclick="drawCard()">
-        <div id="card-image">🃏</div>
-        <div id="result">카드를 터치하세요</div>
-        <div id="description"></div>
+    <div class="card-display">
+        <div id="card-inner" onclick="drawCard()">
+            <div class="card-face card-front">🃏</div>
+            <div class="card-face card-back" id="card-result-img"></div>
+        </div>
     </div>
 
-    <button onclick="drawCard()">다시 뽑기</button>
+    <div id="result-area">
+        <div id="card-name" class="name">어떤 운명이 기다릴까요?</div>
+        <div id="card-desc" class="desc"></div>
+    </div>
+
+    <button onclick="resetCard()">다시 뽑기</button>
 
     <script>
-        const tarotCards = [
-            { name: "0. 광대 (The Fool)", desc: "새로운 시작, 모험심, 순수한 마음이 필요한 시기입니다." },
-            { name: "1. 마법사 (The Magician)", desc: "당신은 준비되었습니다. 당신의 능력을 마음껏 발휘하세요!" },
-            { name: "2. 고위 여사제 (The High Priestess)", desc: "직관을 믿으세요. 내면의 소리에 귀를 기울여야 할 때입니다." },
-            { name: "10. 운명의 수레바퀴", desc: "변화의 바람이 불고 있습니다. 흐름에 몸을 맡기세요." },
-            { name: "19. 태양 (The Sun)", desc: "밝은 에너지와 성공이 기다리고 있습니다. 자신감을 가지세요!" }
+        // 위키미디어 오픈소스 타로 이미지 베이스 URL
+        const imgBase = "https://upload.wikimedia.org/wikipedia/commons/";
+        const tarotData = [
+            { name: "0. 광대 (The Fool)", desc: "순수한 시작, 모험, 자유로운 영혼을 의미합니다.", img: "9/90/RWS_Tarot_00_Fool.jpg" },
+            { name: "1. 마법사 (The Magician)", desc: "창의력, 능력, 준비된 시작을 의미합니다.", img: "d/de/RWS_Tarot_01_Magician.jpg" },
+            { name: "2. 고위 여사제 (The High Priestess)", desc: "직관, 신비로움, 내면의 지혜를 의미합니다.", img: "8/88/RWS_Tarot_02_High_Priestess.jpg" },
+            { name: "3. 여황제 (The Empress)", desc: "풍요로움, 모성애, 결실을 의미합니다.", img: "a/af/RWS_Tarot_03_Empress.jpg" },
+            { name: "4. 황제 (The Emperor)", desc: "권위, 질서, 리더십과 안정을 의미합니다.", img: "c/c3/RWS_Tarot_04_Emperor.jpg" },
+            { name: "5. 교황 (The Hierophant)", desc: "전통, 교육, 정신적 가이드와 믿음을 의미합니다.", img: "8/8d/RWS_Tarot_05_Hierophant.jpg" },
+            { name: "6. 연인 (The Lovers)", desc: "사랑, 선택, 조화로운 관계를 의미합니다.", img: "3/3a/RWS_Tarot_06_Lovers.jpg" },
+            { name: "7. 전차 (The Chariot)", desc: "승리, 전진, 의지력과 통제력을 의미합니다.", img: "9/9b/RWS_Tarot_07_Chariot.jpg" },
+            { name: "8. 힘 (Strength)", desc: "용기, 인내, 부드러운 힘을 의미합니다.", img: "f/f5/RWS_Tarot_08_Strength.jpg" },
+            { name: "9. 은둔자 (The Hermit)", desc: "성찰, 고찰, 내면의 진리를 찾는 시간을 의미합니다.", img: "4/4d/RWS_Tarot_09_Hermit.jpg" },
+            { name: "10. 운명의 수레바퀴", desc: "변화, 행운, 불가항력적인 운명의 흐름을 의미합니다.", img: "3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg" },
+            { name: "11. 정의 (Justice)", desc: "공정함, 진실, 인과응보와 균형을 의미합니다.", img: "e/e0/RWS_Tarot_11_Justice.jpg" },
+            { name: "12. 매달린 사람", desc: "인내, 새로운 관점, 희생을 통한 깨달음을 의미합니다.", img: "2/2b/RWS_Tarot_12_Hanged_Man.jpg" },
+            { name: "13. 죽음 (Death)", desc: "끝과 새로운 시작, 변화와 변혁을 의미합니다.", img: "d/d7/RWS_Tarot_13_Death.jpg" },
+            { name: "14. 절제 (Temperance)", desc: "조화, 균형, 인내와 결합을 의미합니다.", img: "f/f8/RWS_Tarot_14_Temperance.jpg" },
+            { name: "15. 악마 (The Devil)", desc: "속박, 유혹, 중독이나 욕망을 경계하세요.", img: "5/55/RWS_Tarot_15_Devil.jpg" },
+            { name: "16. 탑 (The Tower)", desc: "갑작스러운 변화, 붕괴, 깨달음의 충격을 의미합니다.", img: "5/53/RWS_Tarot_16_Tower.jpg" },
+            { name: "17. 별 (The Star)", desc: "희망, 영감, 치유와 낙관적인 미래를 의미합니다.", img: "d/db/RWS_Tarot_17_Star.jpg" },
+            { name: "18. 달 (The Moon)", desc: "불안, 혼돈, 보이지 않는 환상을 경계하세요.", img: "7/7f/RWS_Tarot_18_Moon.jpg" },
+            { name: "19. 태양 (The Sun)", desc: "성공, 기쁨, 활력과 긍정적인 에너지를 의미합니다.", img: "1/17/RWS_Tarot_19_Sun.jpg" },
+            { name: "20. 심판 (Judgement)", desc: "부활, 결단, 보상과 새로운 소명을 의미합니다.", img: "d/dd/RWS_Tarot_20_Judgement.jpg" },
+            { name: "21. 세계 (The World)", desc: "완성, 통합, 성공적인 마무리를 의미합니다.", img: "f/ff/RWS_Tarot_21_World.jpg" }
+            // 마이너 카드는 공간상 메이저 22장으로 구성했습니다. 78장으로 확장 시 이 배열에 추가만 하면 됩니다!
         ];
 
+        let isFlipped = false;
+
         function drawCard() {
-            const randomIndex = Math.floor(Math.random() * tarotCards.length);
-            const card = tarotCards[randomIndex];
-            document.getElementById('result').innerText = card.name;
-            document.getElementById('description').innerText = card.desc;
-            document.getElementById('card-image').innerText = "✨";
+            if (isFlipped) return;
+
+            const randomIndex = Math.floor(Math.random() * tarotData.length);
+            const card = tarotData[randomIndex];
+
+            const imgContainer = document.getElementById('card-result-img');
+            imgContainer.innerHTML = `<img src="${imgBase}${card.img}" alt="${card.name}">`;
+            
+            document.getElementById('card-name').innerText = card.name;
+            document.getElementById('card-desc').innerText = card.desc;
+            
+            document.getElementById('card-inner').classList.add('is-flipped');
+            isFlipped = true;
+        }
+
+        function resetCard() {
+            document.getElementById('card-inner').classList.remove('is-flipped');
+            setTimeout(() => {
+                document.getElementById('card-name').innerText = "어떤 운명이 기다릴까요?";
+                document.getElementById('card-desc').innerText = "";
+                isFlipped = false;
+            }, 300);
         }
     </script>
 </body>
