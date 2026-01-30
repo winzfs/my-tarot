@@ -20,11 +20,17 @@ const promptText = `타로 해석가로서 질문 "${question}"에 대해 뽑힌
       })
     });
 
-    const data = await response.json();
+// ... API 호출 이후 부분
+const data = await response.json();
+if (data && data.text) {
+    // ## 으로 시작하는 제목 부분을 찾아 분리합니다.
+    const parts = data.text.split('\n');
+    let title = parts[0].replace('## ', '').replace('[', '').replace(']', '');
+    let body = parts.slice(1).join('\n');
 
-    if (data.error) {
-      return res.status(200).json({ text: `[최종 확인 에러]: ${data.error.message}` });
-    }
+    resName.innerText = "🔮 " + title; // AI가 지어준 제목 적용
+    resDesc.innerText = body;
+}
 
     const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     res.status(200).json({ text: aiText || "AI가 답변을 생성하지 못했습니다." });
