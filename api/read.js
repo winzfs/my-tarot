@@ -33,7 +33,8 @@ export default async function handler(req, res) {
         
         // AI가 생성한 텍스트 추출
         const aiText = data.candidates[0].content.parts[0].text;
-
+        res.status(200).json({ text: aiText });
+        
         // 성공 응답 보내기
         res.status(200).json({ text: aiText });
     } catch (error) {
