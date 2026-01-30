@@ -9,8 +9,8 @@ export default async function handler(req, res) {
   const promptText = `타로 해석가로서 질문 "${question}"에 대해 "${cardName}${isReverse ? '(역방향)' : '(정방향)'}" 카드를 해석해줘. 아주 신비롭고 친절하게 3문장 이내로 작성해줘.`;
 
   try {
-    // 확인된 최신 모델명 'gemini-3-pro-preview'를 적용합니다.
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${API_KEY}`, {
+    // 사용자님의 목록에서 확인된 최신 모델명을 그대로 사용합니다.
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -21,8 +21,8 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (data.error) {
-      // 만약 3 버전이 아직 프리뷰 단계라 에러가 난다면 메시지를 띄워줍니다.
-      return res.status(200).json({ text: `[Gemini 3 에러]: ${data.error.message}` });
+      // 만약 3 Flash마저 Quota(할당량) 에러가 난다면, 그때는 2.0 Flash로 돌아가는 것이 가장 안전합니다.
+      return res.status(200).json({ text: `[Gemini 3 Flash 에러]: ${data.error.message}` });
     }
 
     const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
