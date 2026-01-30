@@ -6,7 +6,9 @@ export default async function handler(req, res) {
 
   if (!API_KEY) return res.status(200).json({ text: "환경변수 설정 오류" });
 
-  const promptText = `타로 해석가로서 질문 "${question}"에 대해 "${cardName}${isReverse ? '(역방향)' : '(정방향)'}" 카드를 해석해줘. 친절하게 3문장 이내로.`;
+// promptText 부분 수정
+const promptText = `타로 해석가로서 질문 "${question}"에 대해 뽑힌 카드 [${cards.join(', ')}]를 과거, 현재, 미래 순서로 해석해줘. 
+첫 줄에는 이 전체 해석을 관통하는 신비롭고 멋진 제목을 '## [제목]' 형식으로 한 줄 작성하고, 그 다음 줄부터 해석을 시작해줘.`;
 
   try {
     // 'gemini-flash-latest'는 무료 티어에서 가장 범용적으로 열려 있는 모델명입니다.
