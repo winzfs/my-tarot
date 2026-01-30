@@ -173,71 +173,110 @@ const tarotData = [
     { name: "펜타클 킹", desc: "현실적인 성공과 풍요의 정점.", img: "1/1c/Penta14.jpg" }
 ];
 function startTarot(count) {
-            // 버튼들만 숨기고 질문 입력칸은 남겨둠
-            document.getElementById('mode-selection').style.display = 'none';
-            document.getElementById('tarot-stage').style.display = 'block';
-            
-            const container = document.getElementById('cards-container');
-            container.innerHTML = '';
-            const labels = count === 3 ? ["과거", "현재", "미래"] : ["신탁"];
+    totalCount = count;
+    selectedCards = []; // 초기화
+    document.getElementById('mode-selection').style.display = 'none';
+    document.getElementById('tarot-stage').style.display = 'block';
+    
+    const container = document.getElementById('cards-container');
+    container.innerHTML = '';
+    const labels = count === 3 ? ["과거", "현재", "미래"] : ["오늘의 신탁"];
 
-            for(let i=0; i<count; i++) {
-                container.innerHTML += `
-                    <div class="card-wrapper">
-                        <div class="label">${labels[i]}</div>
-                        <div class="card-display">
-                            <div class="card-inner" onclick="flipCard(this, ${i})">
-                                <div class="card-face card-front">✦</div>
-                                <div class="card-face card-back" id="back-${i}"></div>
-                            </div>
-                        </div>
-                    </div>`;
-            }
+    for(let i=0; i<count; i++) {
+        container.innerHTML += `
+            <div class="card-wrapper">
+                <div class="label">${labels[i]}</div>
+                <div class="card-display">
+                    <div class="card-inner" onclick="flipCard(this, ${i})">
+                        <div class="card-face card-front">✦</div>
+                        <div class="card-face card-back" id="back-${i}"></div>
+                    </div>
+                </div>
+            </div>`;
+    }
+    
+    // 결과창 초기화 및 해석 버튼 숨기기
+    document.getElementById('res-name').innerText = "카드를 뒤집어주세요";
+    document.getElementById('res-desc').innerText = count + "장의 카드를 모두 선택하면 종합 해석이 시작됩니다.";
+    const oldBtn = document.getElementById('total-read-btn');
+    if(oldBtn) oldBtn.remove();
+}
+
+async function flipCard(el, idx) {
+    if (el.classList.contains('is-flipped')) return;
+
+    // 사운드 재생
+    document.getElementById('bgm').play().catch(() => {});
+    document.getElementById('sfx-flip').currentTime = 0;
+    document.getElementById('sfx-flip').play();
+
+    // 랜덤 카드 추출 및 정/역 결정
+    const card = tarotData[Math.floor(Math.random() * tarotData.length)];
+    const isReverse = Math.random() > 0.7; // 30% 확률로 역방향
+    const cardDisplayName = card.name + (isReverse ? " (역방향)" : " (정방향)");
+
+    // 화면에 카드 이미지 표시
+    const back = document.getElementById(`back-${idx}`);
+    back.innerHTML = `<img src="${imgBase}${card.img}" style="${isReverse ? 'transform:rotate(180deg)' : ''}; width:100%; height:100%; object-fit:cover;">`;
+    el.classList.add('is-flipped');
+
+    // 선택된 카드 리스트에 저장
+    selectedCards.push(cardDisplayName);
+
+    // 모든 카드를 다 뒤집었을 때
+    if (selectedCards.length === totalCount) {
+        showFinalReadButton();
+    }
+}
+
+function showFinalReadButton() {
+    const resDesc = document.getElementById('res-desc');
+    resDesc.innerHTML = `
+        <div style="margin-top:20px;">
+            <p>모든 카드가 선택되었습니다.</p>
+            <button id="total-read-btn" class="nav-btn" style="background:var(--gold); color:black; font-weight:bold; width:100%;" onclick="getFinalAIReading()">
+                ✨ AI 종합 해석 보기
+            </button>
+        </div>
+    `;
+}
+
+async function getFinalAIReading() {
+    const question = document.getElementById('user-question').value || "나의 앞날에 대해";
+    const resName = document.getElementById('res-name');
+    const resDesc = document.getElementById('res-desc');
+    const btn = document.getElementById('total-read-btn');
+
+    btn.disabled = true;
+    btn.innerText = "🔮 우주의 흐름을 읽는 중...";
+    resName.innerText = "종합 해석 생성 중...";
+
+    try {
+        const response = await fetch('/api/read', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                question: question,
+                cards: selectedCards // 배열 형태로 전송
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data && data.text) {
+            resName.innerText = "결과: " + (totalCount === 3 ? "과거-현재-미래의 흐름" : "오늘의 신탁");
+            resDesc.innerText = data.text;
+            btn.style.display = 'none'; // 해석 완료 후 버튼 숨김
+        } else {
+            resDesc.innerText = "신탁을 가져오지 못했습니다. 에러: " + (data.text || "알 수 없는 오류");
+            btn.disabled = false;
+            btn.innerText = "다시 시도하기";
         }
-
-        async function flipCard(el, idx) {
-            if (el.classList.contains('is-flipped')) return;
-
-            document.getElementById('bgm').play().catch(() => {});
-            document.getElementById('sfx-flip').currentTime = 0;
-            document.getElementById('sfx-flip').play();
-
-            const card = tarotData[Math.floor(Math.random() * tarotData.length)];
-            const isReverse = Math.random() > 0.5;
-            const question = document.getElementById('user-question').value;
-
-            const back = document.getElementById(`back-${idx}`);
-            back.innerHTML = `<img src="${imgBase}${card.img}" style="${isReverse ? 'transform:rotate(180deg)' : ''}">`;
-            el.classList.add('is-flipped');
-
-            const resName = document.getElementById('res-name');
-            const resDesc = document.getElementById('res-desc');
-            resName.innerText = "🔮 AI가 신탁을 읽는 중...";
-            resDesc.innerText = "우주의 흐름을 분석하고 있습니다...";
-
-            try {
-                const response = await fetch('/api/read', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        question: question || "오늘의 운세",
-                        cardName: card.name,
-                        isReverse: isReverse
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (data && data.text) {
-                    resName.innerText = card.name + (isReverse ? " (역방향)" : " (정방향)");
-                    resDesc.innerText = data.text;
-                } else {
-                    resDesc.innerText = "신탁을 가져오지 못했습니다. 다시 시도해 주세요.";
-                }
-            } catch (error) {
-                resDesc.innerText = "서버 연결에 문제가 발생했습니다.";
-            }
-        }
+    } catch (error) {
+        resDesc.innerText = "서버 연결에 문제가 발생했습니다.";
+        btn.disabled = false;
+    }
+}
     </script>
 </body>
 </html>
