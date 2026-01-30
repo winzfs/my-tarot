@@ -8,112 +8,118 @@
     <style>
 :root {
     --gold: #e2b857;
-    --gold-glow: rgba(226, 184, 87, 0.3);
+    --gold-glow: rgba(226, 184, 87, 0.2);
     --bg-dark: #0a0a0c;
-    --glass: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 body {
-    background-color: var(--bg-dark);
-    background-image: 
-        radial-gradient(circle at 50% -20%, #1e1e2d 0%, transparent 50%),
-        radial-gradient(circle at 0% 100%, #111119 0%, transparent 40%);
+    background: var(--bg-dark);
     color: #e0e0e0;
     font-family: 'Noto Sans KR', sans-serif;
-    line-height: 1.6;
-    letter-spacing: -0.02em;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 모든 요소를 중앙으로 */
+    min-height: 100vh;
 }
 
-/* 제목: Cinzel 폰트로 클래식하면서 모던하게 */
 h1 {
     font-family: 'Cinzel', serif;
-    font-size: 3rem;
-    letter-spacing: 8px;
+    font-size: 2.5rem;
+    letter-spacing: 5px;
+    color: var(--gold);
+    margin: 40px 0;
+    text-shadow: 0 0 15px var(--gold-glow);
+}
+
+/* 타로 무대 설정 */
+#tarot-stage {
+    display: none; 
+    width: 100%;
+    max-width: 800px; /* 너무 넓어지지 않게 제한 */
+    margin: 0 auto;
+}
+
+/* 카드 컨테이너: 카드들을 가로로 나란히 */
+.cards-container {
+    display: flex;
+    justify-content: center; /* 중앙 정렬 */
+    gap: 15px; /* 카드 사이 간격 */
     margin-bottom: 40px;
-    background: linear-gradient(to bottom, #fff 30%, var(--gold));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 15px var(--gold-glow));
+    flex-wrap: nowrap; /* 카드가 아래로 떨어지지 않게 */
 }
 
-/* 입력창 및 카드 모드 선택 섹션 */
-#user-question, .mode-card, .result-text {
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+/* 카드 크기 조절 (여기가 핵심!) */
+.card-wrapper {
+    flex: 0 0 160px; /* 카드 너비를 160px로 고정 */
+    text-align: center;
 }
 
-#user-question:focus, .mode-card:hover {
-    border-color: var(--gold);
-    background: rgba(255, 255, 255, 0.07);
-    box-shadow: 0 0 20px var(--gold-glow);
-    transform: translateY(-5px);
+.card-display {
+    width: 100%;
+    height: 250px; /* 카드 높이 적절히 조절 */
+    perspective: 1000px;
 }
 
-/* 카드 라벨 정렬 고정 */
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--gold);
+    overflow: hidden;
+}
+
+.card-back { transform: rotateY(180deg); background: white; }
+.card-back img { width: 100%; height: 100%; object-fit: cover; }
+
+/* 라벨 스타일 */
 .label {
     font-family: 'Cinzel', serif;
-    font-size: 0.85rem;
-    letter-spacing: 2px;
-    height: 3rem;
+    font-size: 0.8rem;
     color: var(--gold);
+    margin-bottom: 10px;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 카드 이미지 보더 및 그림자 */
-.card-face {
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.card-inner.is-flipped .card-face {
-    border-color: var(--gold);
-}
-
-/* 결과창 내부 스타일 */
+/* 결과창 스타일: 카드 너비와 맞춤 */
 .result-text {
-    max-width: 800px;
-    padding: 40px;
-    margin-top: 50px;
+    width: 100%;
+    max-width: 600px; /* 결과창은 카드들보다 약간 좁게 해서 집중도 상승 */
+    margin: 30px auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--gold-glow);
+    border-radius: 20px;
+    box-sizing: border-box;
 }
 
 .name {
     font-family: 'Cinzel', serif;
-    font-size: 1.8rem;
-    letter-spacing: 3px;
+    font-size: 1.5rem;
     color: var(--gold);
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .desc {
-    color: #bbb;
-    font-weight: 300;
-    line-height: 1.8;
-}
-
-/* 버튼 모던화 */
-button.nav-btn, #total-read-btn {
-    background: transparent;
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    padding: 12px 30px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 0.9rem;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-button.nav-btn:hover {
-    background: var(--gold);
-    color: black;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #ccc;
+    word-break: keep-all;
 }
     </style>
 </head>
