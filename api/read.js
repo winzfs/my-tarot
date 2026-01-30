@@ -6,11 +6,11 @@ export default async function handler(req, res) {
 
   if (!API_KEY) return res.status(200).json({ text: "환경변수 설정 오류" });
 
-  const promptText = `타로 해석가로서 질문 "${question}"에 대해 "${cardName}${isReverse ? '(역방향)' : '(정방향)'}" 카드를 해석해줘. 아주 신비롭고 친절하게 3문장 이내로 작성해줘.`;
+  const promptText = `타로 해석가로서 질문 "${question}"에 대해 "${cardName}${isReverse ? '(역방향)' : '(정방향)'}" 카드를 해석해줘. 친절하고 신비로운 말투로 3문장 이내로 작성해줘.`;
 
   try {
-    // 사용자님의 목록에서 확인된 최신 모델명을 그대로 사용합니다.
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`, {
+    // 2.0 Flash는 무료 티어에서 가장 안정적이고 빠릅니다.
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -21,14 +21,14 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (data.error) {
-      // 만약 3 Flash마저 Quota(할당량) 에러가 난다면, 그때는 2.0 Flash로 돌아가는 것이 가장 안전합니다.
-      return res.status(200).json({ text: `[Gemini 3 Flash 에러]: ${data.error.message}` });
+      // 혹시라도 에러가 나면 상세 내용을 출력합니다.
+      return res.status(200).json({ text: `[API 에러]: ${data.error.message}` });
     }
 
     const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    res.status(200).json({ text: aiText || "AI가 신탁을 읽어내지 못했습니다." });
+    res.status(200).json({ text: aiText || "AI가 답변을 생성하지 못했습니다." });
 
   } catch (error) {
-    res.status(500).json({ text: "연결 실패" });
+    res.status(500).json({ text: "서버 연결 실패" });
   }
 }
