@@ -167,6 +167,11 @@ function toggleBGM() {
         function drawCard() {
             if (isFlipped) return;
 
+            // 추가된 부분: 효과음 재생 및 배경음악 시작
+    sfxFlip.currentTime = 0; // 소리 초기화 (연속 클릭 대비)
+    sfxFlip.play();
+    if (bgm.paused) bgm.play(); // 첫 클릭 시 배경음악 자동 재생
+
             const randomIndex = Math.floor(Math.random() * tarotData.length);
             const card = tarotData[randomIndex];
             const isReverse = Math.random() > 0.5;
