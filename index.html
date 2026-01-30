@@ -34,7 +34,15 @@
         .cards-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
         
         .card-wrapper { width: 160px; text-align: center; }
-        .label { color: var(--gold); font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
+        .label { 
+            color: var(--gold); 
+            font-weight: bold; 
+            margin-bottom: 12px; 
+            font-size: 1rem; 
+            min-height: 1.5rem; /* 이름이 표시될 때 레이아웃이 흔들리지 않게 고정 */
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+            transition: all 0.5s ease; /* 이름이 바뀔 때 부드럽게 */
+        }
 
         .card-display { width: 100%; height: 260px; perspective: 1000px; }
         .card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
