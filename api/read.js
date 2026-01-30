@@ -1,26 +1,16 @@
 export default async function handler(req, res) {
-    // POST 요청이 아니면 거절 (보안)
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
-    }
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
     const { question, cardName, isReverse } = req.body;
-    const API_KEY = process.env.GEMINI_API_KEY; // Vercel 환경변수에서 가져옴
+    const API_KEY = process.env.GEMINI_API_KEY;
 
-    // AI에게 보낼 명령문(프롬프트) 설정
-    const prompt = `
-        당신은 신비롭고 지혜로운 타로 해석가입니다. 
-        사용자의 고민: "${question || '오늘의 전반적인 운세'}"
-        뽑힌 카드: "${cardName}${isReverse ? ' (역방향)' : ' (정방향)'}"
-        
-        이 상황을 바탕으로 사용자에게 도움이 될 해석을 해주세요.
-        1. 카드가 가진 상징적인 의미를 고민과 연결해 설명해줘.
-        2. 부드럽고 따뜻한 말투(해요체)를 사용해줘.
-        3. 3~4문장 정도로 핵심만 담아줘.
-    `;
+    if (!API_KEY) {
+        return res.status(500).json({ text: "Vercel 환경변수에 API 키가 없습니다." });
+    }
+
+    const prompt = `타로 해석가로서 질문 "${question}"에 대해 "${cardName}${isReverse ? '(역방향)' : '(정방향)'}" 카드를 해석해줘. 아주 친절하고 신비로운 말투로 3문장 이내로 작성해줘.`;
 
     try {
-        // Gemini API 호출
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -30,15 +20,17 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
-        
-        // AI가 생성한 텍스트 추출
-        const aiText = data.candidates[0].content.parts[0].text;
-        res.status(200).json({ text: aiText });
-        
-        // 성공 응답 보내기
-        res.status(200).json({ text: aiText });
+
+        // 데이터 구조를 안전하게 추출 (Optional Chaining 사용)
+        const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (aiText) {
+            res.status(200).json({ text: aiText });
+        } else {
+            console.error("API 구조 에러:", data);
+            res.status(500).json({ text: "AI가 응답을 생성하지 못했습니다. (API 응답 확인 필요)" });
+        }
     } catch (error) {
-        console.error("API 호출 에러:", error);
-        res.status(500).json({ error: "AI가 신탁을 읽어오지 못했습니다. 다시 시도해 주세요." });
+        res.status(500).json({ text: "서버 내부 오류가 발생했습니다." });
     }
 }
