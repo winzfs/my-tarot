@@ -30,8 +30,20 @@
         .mode-card:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-5px); }
         .mode-card h2 { color: var(--gold); margin-top: 0; }
 
-        #tarot-stage { display: none; width: 100%; max-width: 900px; margin-top: 20px; }
-        .cards-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
+        #tarot-stage { 
+            display: none; 
+            width: 100%; 
+            max-width: 800px; /* 결과창 너비와 일치시킴 */
+            margin: 20px auto; /* 가로 중앙 정렬 */
+                }
+    .cards-container { 
+            display: flex; 
+            justify-content: center; /* 카드 3장을 가운데로 모음 */
+            gap: 20px; 
+            flex-wrap: wrap; 
+            margin-bottom: 30px; 
+            width: 100%;
+        }
         
         .card-wrapper { width: 160px; text-align: center; }
         .label { 
@@ -52,7 +64,17 @@
         .card-back { background: white; transform: rotateY(180deg); }
         .card-back img { width: 100%; height: 100%; object-fit: cover; }
 
-        .result-text { margin-top: 20px; padding: 25px; background: rgba(0,0,0,0.5); border: 1px solid rgba(212,175,55,0.3); border-radius: 15px; min-height: 120px; max-width: 600px; }
+ .result-text { 
+            margin: 20px auto; /* 중앙 정렬 */
+            padding: 25px; 
+            background: rgba(0,0,0,0.6); 
+            border: 2px solid var(--gold); /* 테두리를 조금 더 강조 */
+            border-radius: 15px; 
+            min-height: 120px; 
+            max-width: 800px; /* 카드 컨테이너 너비와 통일 */
+            width: 100%; 
+            box-sizing: border-box; /* 패딩 때문에 삐져나가지 않게 */
+        }
         .name { color: var(--gold); font-size: 1.4rem; margin-bottom: 15px; font-weight: bold; }
         .desc { font-size: 1.05rem; color: #eee; line-height: 1.7; word-break: keep-all; }
 
