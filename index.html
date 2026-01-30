@@ -75,7 +75,7 @@
     <script>
         const imgBase = "https://upload.wikimedia.org/wikipedia/commons/";
 const tarotData = [
-    // [메이저 아르카나 0-21]
+    // [메이저 아르카나 0-21] - 22장
     { name: "0. 광대", desc: "순수한 시작, 모험, 자유.", img: "9/90/RWS_Tarot_00_Fool.jpg" },
     { name: "1. 마법사", desc: "창의력, 능력, 실행력.", img: "d/de/RWS_Tarot_01_Magician.jpg" },
     { name: "2. 고위 여사제", desc: "직관, 신비, 무의식.", img: "8/88/RWS_Tarot_02_High_Priestess.jpg" },
@@ -99,30 +99,69 @@ const tarotData = [
     { name: "20. 심판", desc: "부활, 용서, 결단.", img: "d/dd/RWS_Tarot_20_Judgement.jpg" },
     { name: "21. 세계", desc: "완성, 통합, 성공적 마무리.", img: "f/ff/RWS_Tarot_21_World.jpg" },
 
-    // [Wands 1-10]
-    { name: "완드 에이스", desc: "열정적인 시작.", img: "1/11/Wands01.jpg" },
-    { name: "완드 2", desc: "계획과 확장.", img: "0/0f/Wands02.jpg" },
-    { name: "완드 3", desc: "협력과 탐험.", img: "f/ff/Wands03.jpg" },
-    { name: "완드 4", desc: "안정과 축제.", img: "a/a4/Wands04.jpg" },
-    { name: "완드 5", desc: "경쟁과 갈등.", img: "9/9d/Wands05.jpg" },
-    { name: "완드 6", desc: "승리와 전진.", img: "3/3b/Wands06.jpg" },
-    { name: "완드 7", desc: "방어와 용기.", img: "e/e4/Wands07.jpg" },
-    { name: "완드 8", desc: "신속한 변화.", img: "6/6b/Wands08.jpg" },
-    { name: "완드 9", desc: "경계와 인내.", img: "4/4d/Wands09.jpg" },
-    { name: "완드 10", desc: "책임과 압박.", img: "0/0b/Wands10.jpg" },
+    // [Wands 수트] - 14장
+    { name: "완드 에이스", desc: "새로운 열정과 에너지의 시작.", img: "1/11/Wands01.jpg" },
+    { name: "완드 2", desc: "미래를 향한 계획과 성장의 갈림길.", img: "0/0f/Wands02.jpg" },
+    { name: "완드 3", desc: "기다림 끝에 얻은 확신과 무역.", img: "f/ff/Wands03.jpg" },
+    { name: "완드 4", desc: "휴식, 안식, 성공적인 기념일.", img: "a/a4/Wands04.jpg" },
+    { name: "완드 5", desc: "분열과 다툼, 선의의 경쟁.", img: "9/9d/Wands05.jpg" },
+    { name: "완드 6", desc: "승리와 명예, 좋은 소식.", img: "3/3b/Wands06.jpg" },
+    { name: "완드 7", desc: "어려움에 맞서는 용기와 방어.", img: "e/e4/Wands07.jpg" },
+    { name: "완드 8", desc: "신속한 진행과 명확한 결론.", img: "6/6b/Wands08.jpg" },
+    { name: "완드 9", desc: "포기하지 않는 인내와 마지막 경계.", img: "4/4d/Wands09.jpg" },
+    { name: "완드 10", desc: "책임감과 압박, 끝이 보이는 고생.", img: "0/0b/Wands10.jpg" },
+    { name: "완드 시종", desc: "새로운 소식과 아이디어.", img: "6/6a/Wands11.jpg" },
+    { name: "완드 기사", desc: "도전적인 행동과 추진력.", img: "1/13/Wands12.jpg" },
+    { name: "완드 퀸", desc: "자신감 넘치고 따뜻한 리더.", img: "0/0d/Wands13.jpg" },
+    { name: "완드 킹", desc: "카리스마 있는 리더와 성취.", img: "c/ce/Wands14.jpg" },
 
-    // [Cups 1-10]
-    { name: "컵 에이스", desc: "사랑의 시작.", img: "3/36/Cups01.jpg" },
-    { name: "컵 2", desc: "결합과 조화.", img: "f/f8/Cups02.jpg" },
-    { name: "컵 3", desc: "축하와 우정.", img: "7/7a/Cups03.jpg" },
-    { name: "컵 4", desc: "권태와 명상.", img: "3/35/Cups04.jpg" },
-    { name: "컵 5", desc: "상실과 슬픔.", img: "d/d7/Cups05.jpg" },
-    { name: "컵 6", desc: "추억과 순수.", img: "1/17/Cups06.jpg" },
-    { name: "컵 7", desc: "환상과 선택.", img: "a/ae/Cups07.jpg" },
-    { name: "컵 8", desc: "새로운 여정.", img: "6/60/Cups08.jpg" },
-    { name: "컵 9", desc: "만족과 소원.", img: "2/24/Cups09.jpg" },
-    { name: "컵 10", desc: "행복한 가정.", img: "d/d4/Cups10.jpg" }
-    // (이런 식으로 마이너 카드 경로를 /숫자/숫자/이름.jpg 형식에 맞춰 채우면 모두 나옵니다.)
+    // [Cups 수트] - 14장
+    { name: "컵 에이스", desc: "새로운 감정과 사랑의 분출.", img: "3/36/Cups01.jpg" },
+    { name: "컵 2", desc: "두 마음의 결합과 조화.", img: "f/f8/Cups02.jpg" },
+    { name: "컵 3", desc: "함께 즐기는 축제와 우정.", img: "7/7a/Cups03.jpg" },
+    { name: "컵 4", desc: "지루함과 새로운 제안에 대한 무관심.", img: "3/35/Cups04.jpg" },
+    { name: "컵 5", desc: "상실에 대한 미련과 뒤에 남은 희망.", img: "d/d7/Cups05.jpg" },
+    { name: "컵 6", desc: "향수와 순수했던 시절로의 회귀.", img: "1/17/Cups06.jpg" },
+    { name: "컵 7", desc: "화려한 환상과 선택의 어려움.", img: "a/ae/Cups07.jpg" },
+    { name: "컵 8", desc: "이미 쌓아둔 것을 뒤로하고 떠나는 용기.", img: "6/60/Cups08.jpg" },
+    { name: "컵 9", desc: "감정적 풍요와 소원 성취.", img: "2/24/Cups09.jpg" },
+    { name: "컵 10", desc: "완성된 행복과 가정의 화목.", img: "d/d4/Cups10.jpg" },
+    { name: "컵 시종", desc: "호의적인 소식과 예민한 감수성.", img: "a/ad/Cups11.jpg" },
+    { name: "컵 기사", desc: "낭만적인 제안과 평화의 메신저.", img: "f/fa/Cups12.jpg" },
+    { name: "컵 퀸", desc: "직관적이고 자애로운 공감 능력.", img: "6/62/Cups13.jpg" },
+    { name: "컵 킹", desc: "감정을 다스릴 줄 아는 성숙함.", img: "0/04/Cups14.jpg" },
+
+    // [Swords 수트] - 14장
+    { name: "소드 에이스", desc: "지적인 승리와 새로운 결단력.", img: "1/1a/Swords01.jpg" },
+    { name: "소드 2", desc: "선택의 곤란과 팽팽한 균형.", img: "9/9e/Swords02.jpg" },
+    { name: "소드 3", desc: "피할 수 없는 슬픔과 상처의 정화.", img: "0/02/Swords03.jpg" },
+    { name: "소드 4", desc: "회복을 위한 명상과 강제적 휴식.", img: "b/bf/Swords04.jpg" },
+    { name: "소드 5", desc: "의미 없는 승리와 상처뿐인 영광.", img: "2/23/Swords05.jpg" },
+    { name: "소드 6", desc: "안정적인 곳으로의 이동과 회복.", img: "2/29/Swords06.jpg" },
+    { name: "소드 7", desc: "은밀한 계획이나 전략적인 도주.", img: "3/34/Swords07.jpg" },
+    { name: "소드 8", desc: "스스로 갇힌 고정관념과 진퇴양난.", img: "a/a7/Swords08.jpg" },
+    { name: "소드 9", desc: "극심한 스트레스와 불면증.", img: "2/2f/Swords09.jpg" },
+    { name: "소드 10", desc: "최악의 상황 끝에 오는 새로운 희망.", img: "d/d4/Swords10.jpg" },
+    { name: "소드 시종", desc: "예리한 통찰력과 경계심.", img: "4/4b/Swords11.jpg" },
+    { name: "소드 기사", desc: "거침없는 돌파력과 성급한 추진.", img: "d/d4/Swords12.jpg" },
+    { name: "소드 퀸", desc: "냉철한 판단력과 독립적인 정신.", img: "d/d2/Swords13.jpg" },
+    { name: "소드 킹", desc: "이성적이고 엄격한 리더십.", img: "3/33/Swords14.jpg" },
+
+    // [Pentacles 수트] - 14장
+    { name: "펜타클 에이스", desc: "물질적 풍요와 현실적인 기회.", img: "f/fd/Penta01.jpg" },
+    { name: "펜타클 2", desc: "두 가지 상황 사이의 유연한 조절.", img: "9/9f/Penta02.jpg" },
+    { name: "펜타클 3", desc: "협력과 전문적인 기술 인정.", img: "4/42/Penta03.jpg" },
+    { name: "펜타클 4", desc: "소유욕과 현재 상태의 고수.", img: "3/35/Penta04.jpg" },
+    { name: "펜타클 5", desc: "일시적인 경제적 어려움과 동료애.", img: "9/96/Penta05.jpg" },
+    { name: "펜타클 6", desc: "자비로운 나눔과 적절한 보상.", img: "a/a6/Penta06.jpg" },
+    { name: "펜타클 7", desc: "노력의 결과물을 지켜보며 고민함.", img: "6/6a/Penta07.jpg" },
+    { name: "펜타클 8", desc: "성실한 노력과 장인 정신.", img: "4/49/Penta08.jpg" },
+    { name: "펜타클 9", desc: "물질적 성공과 우아한 홀로서기.", img: "f/f0/Penta09.jpg" },
+    { name: "펜타클 10", desc: "가문의 번창과 풍요로운 유산.", img: "4/42/Penta10.jpg" },
+    { name: "펜타클 시종", desc: "현실적인 배움과 기회의 포착.", img: "e/ec/Penta11.jpg" },
+    { name: "펜타클 기사", desc: "신중하고 믿음직한 태도.", img: "d/d5/Penta12.jpg" },
+    { name: "펜타클 퀸", desc: "풍족하고 실용적인 안목.", img: "8/88/Penta13.jpg" },
+    { name: "펜타클 킹", desc: "현실적인 성공과 풍요의 정점.", img: "1/1c/Penta14.jpg" }
 ];
 let selectedCards = [];
 
