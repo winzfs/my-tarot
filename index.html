@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcanum Tarot - 모드 선택</title>
+    <title>Arcanum Tarot - AI 신탁</title>
     <style>
         :root { --gold: #d4af37; --deep-blue: #0f0c29; }
         body { 
@@ -13,25 +13,31 @@
         }
         h1 { font-size: 2.2rem; margin-top: 30px; color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); letter-spacing: 4px; }
         
+        /* 질문 입력창 스타일 */
+        #input-area { margin-top: 20px; width: 100%; max-width: 400px; }
+        #user-question { 
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--gold); 
+            background: rgba(0,0,0,0.5); color: white; text-align: center; font-size: 1rem;
+        }
+
         /* 모드 선택 화면 */
-        #mode-selection { margin-top: 50px; display: block; }
+        #mode-selection { margin-top: 40px; display: block; }
         .mode-card {
             background: rgba(255, 255, 255, 0.05); border: 1px solid var(--gold);
-            padding: 30px; margin: 20px; border-radius: 15px; cursor: pointer;
-            transition: 0.3s; width: 300px; display: inline-block; vertical-align: top;
+            padding: 25px; margin: 15px; border-radius: 15px; cursor: pointer;
+            transition: 0.3s; width: 280px; display: inline-block; vertical-align: top;
         }
         .mode-card:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-5px); }
         .mode-card h2 { color: var(--gold); margin-top: 0; }
-        .mode-card p { font-size: 0.9rem; color: #ccc; line-height: 1.6; }
 
-        /* 타로 스테이지 (처음엔 숨김) */
+        /* 타로 스테이지 */
         #tarot-stage { display: none; width: 100%; max-width: 900px; margin-top: 20px; }
         .cards-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
         
-        .card-wrapper { width: 180px; text-align: center; }
+        .card-wrapper { width: 160px; text-align: center; }
         .label { color: var(--gold); font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
 
-        .card-display { width: 100%; height: 300px; perspective: 1000px; }
+        .card-display { width: 100%; height: 260px; perspective: 1000px; }
         .card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
         .card-inner.is-flipped { transform: rotateY(180deg); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; border: 2px solid var(--gold); overflow: hidden; }
@@ -39,9 +45,9 @@
         .card-back { background: white; transform: rotateY(180deg); }
         .card-back img { width: 100%; height: 100%; object-fit: cover; }
 
-        .result-text { margin-top: 20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; min-height: 100px; }
-        .name { color: var(--gold); font-size: 1.4rem; margin-bottom: 10px; }
-        .desc { font-size: 1rem; color: #ddd; line-height: 1.6; }
+        .result-text { margin-top: 20px; padding: 25px; background: rgba(0,0,0,0.5); border: 1px solid rgba(212,175,55,0.3); border-radius: 15px; min-height: 120px; max-width: 600px; }
+        .name { color: var(--gold); font-size: 1.4rem; margin-bottom: 15px; font-weight: bold; }
+        .desc { font-size: 1.05rem; color: #eee; line-height: 1.7; word-break: keep-all; }
 
         button.nav-btn { margin-top: 30px; padding: 10px 25px; background: none; border: 1px solid var(--gold); color: var(--gold); cursor: pointer; border-radius: 5px; }
     </style>
@@ -53,14 +59,18 @@
 
     <h1>ARCANUM TAROT</h1>
 
+    <div id="input-area">
+        <input type="text" id="user-question" placeholder="무엇이 궁금하신가요? (예: 연애운, 금전운)">
+    </div>
+
     <div id="mode-selection">
         <div class="mode-card" onclick="startTarot(1)">
-            <h2>원 카드 (One Card)</h2>
-            <p><strong>용도:</strong> 오늘의 운세, 명확한 예/아니오 답변, 단순한 조언이 필요할 때 적합합니다.</p>
+            <h2>원 카드</h2>
+            <p>오늘의 운세나 단순한 조언</p>
         </div>
         <div class="mode-card" onclick="startTarot(3)">
-            <h2>쓰리 카드 (Three Cards)</h2>
-            <p><strong>용도:</strong> 과거-현재-미래의 흐름을 보거나, 문제의 원인과 결과 등 인과관계를 입체적으로 분석할 때 좋습니다.</p>
+            <h2>쓰리 카드</h2>
+            <p>과거-현재-미래의 흐름 분석</p>
         </div>
     </div>
 
@@ -68,7 +78,7 @@
         <div class="cards-container" id="cards-container"></div>
         <div class="result-text" id="result-text">
             <div id="res-name" class="name">카드를 뒤집어주세요</div>
-            <div id="res-desc" class="desc">각 카드를 클릭하면 신탁이 나타납니다.</div>
+            <div id="res-desc" class="desc">각 카드를 클릭하면 AI의 신탁이 나타납니다.</div>
         </div>
         <button class="nav-btn" onclick="location.reload()">처음으로 돌아가기</button>
     </div>
@@ -163,15 +173,14 @@ const tarotData = [
     { name: "펜타클 퀸", desc: "풍족하고 실용적인 안목.", img: "8/88/Penta13.jpg" },
     { name: "펜타클 킹", desc: "현실적인 성공과 풍요의 정점.", img: "1/1c/Penta14.jpg" }
 ];
-let selectedCards = [];
-
-        function startTarot(count) {
+function startTarot(count) {
             document.getElementById('mode-selection').style.display = 'none';
+            document.getElementById('input-area').style.display = 'none';
             document.getElementById('tarot-stage').style.display = 'block';
             
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
-            const labels = count === 3 ? ["과거", "현재", "미래"] : ["오늘의 운세"];
+            const labels = count === 3 ? ["과거", "현재", "미래"] : ["신탁"];
 
             for(let i=0; i<count; i++) {
                 container.innerHTML += `
@@ -187,25 +196,48 @@ let selectedCards = [];
             }
         }
 
-        function flipCard(el, idx) {
+        async function flipCard(el, idx) {
             if (el.classList.contains('is-flipped')) return;
 
-            // 소리 재생
             document.getElementById('bgm').play().catch(() => {});
             document.getElementById('sfx-flip').currentTime = 0;
             document.getElementById('sfx-flip').play();
 
             const card = tarotData[Math.floor(Math.random() * tarotData.length)];
             const isReverse = Math.random() > 0.5;
+            const question = document.getElementById('user-question').value;
 
+            // 카드 뒤집기
             const back = document.getElementById(`back-${idx}`);
             back.innerHTML = `<img src="${imgBase}${card.img}" style="${isReverse ? 'transform:rotate(180deg)' : ''}">`;
-
             el.classList.add('is-flipped');
 
-            // 결과 업데이트 (쓰리카드의 경우 클릭한 카드의 정보를 보여줌)
-            document.getElementById('res-name').innerText = card.name + (isReverse ? " (역방향)" : "");
-            document.getElementById('res-desc').innerText = (isReverse ? "주의가 필요한 단계: " : "") + card.desc;
+            // AI 해석 로딩 표시
+            const resName = document.getElementById('res-name');
+            const resDesc = document.getElementById('res-desc');
+            resName.innerText = "🔮 AI가 신탁을 읽는 중...";
+            resDesc.innerText = "우주의 흐름을 분석하고 있습니다. 잠시만 기다려주세요.";
+
+            try {
+                // Vercel 서버 함수 호출
+                const response = await fetch('/api/read', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: question || "오늘의 운세",
+                        cardName: card.name,
+                        isReverse: isReverse
+                    })
+                });
+
+                const data = await response.json();
+                
+                resName.innerText = card.name + (isReverse ? " (역방향)" : " (정방향)");
+                resDesc.innerText = data.text; // AI가 보내준 해석 출력
+            } catch (error) {
+                console.error(error);
+                resDesc.innerText = "통신이 원활하지 않습니다. 다시 시도해 주세요.";
+            }
         }
     </script>
 </body>
