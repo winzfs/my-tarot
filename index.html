@@ -3,99 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프리미엄 78장 타로 점</title>
+    <title>ARCANUM TAROT</title>
     <style>
-        :root { 
-            --gold: #d4af37; 
-            --deep-blue: #0f0c29;
-            --accent: #e94560;
-        }
+        :root { --gold: #d4af37; --deep-blue: #0f0c29; }
         body { 
-            text-align: center; 
-            background: radial-gradient(circle at center, #1b1429 0%, #05050a 100%);
-            color: white; 
-            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; 
-            margin: 0; padding: 20px; min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center;
+            text-align: center; background: radial-gradient(circle at center, #1b1429 0%, #05050a 100%);
+            color: white; font-family: 'Apple SD Gothic Neo', sans-serif; margin: 0; padding: 20px; 
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center;
         }
-        
-        h1 { 
-            font-size: 2rem; margin-bottom: 10px; letter-spacing: 4px;
-            color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-        }
+        h1 { font-size: 2rem; margin-top: 40px; color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); letter-spacing: 4px; }
         .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
-
-        /* 카드 전시 스테이지 */
-        .card-display { 
-            margin: 20px auto; position: relative; width: 220px; height: 380px; 
-            perspective: 1200px; 
-        }
-        
-        #card-inner { 
-            width: 100%; height: 100%; position: relative; 
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            transform-style: preserve-3d; cursor: pointer; 
-        }
-        #card-inner:hover { transform: scale(1.02); }
+        .card-display { margin: 20px auto; width: 220px; height: 380px; perspective: 1200px; }
+        #card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; cursor: pointer; }
         #card-inner.is-flipped { transform: rotateY(180deg); }
-
-        .card-face { 
-            position: absolute; width: 100%; height: 100%; 
-            backface-visibility: hidden; border-radius: 12px; 
-            border: 2px solid var(--gold); 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            overflow: hidden;
-        }
-
-        .card-front { 
-            background: #1a1a2e;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 80%),
-                repeating-conic-gradient(from 0deg, #101025 0deg 30deg, #161630 30deg 60deg);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .card-front::after {
-            content: "✦"; font-size: 60px; color: var(--gold);
-            text-shadow: 0 0 20px var(--gold);
-        }
-
-        .card-back { 
-            background: white; transform: rotateY(180deg); 
-            display: flex; align-items: center; justify-content: center; 
-        }
-        .card-back img { 
-            width: 100%; height: 100%; object-fit: cover; 
-            transition: transform 0.4s ease;
-        }
-
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; border: 2px solid var(--gold); box-shadow: 0 15px 35px rgba(0,0,0,0.6); overflow: hidden; }
+        .card-front { background: #1a1a2e; background-image: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 80%), repeating-conic-gradient(from 0deg, #101025 0deg 30deg, #161630 30deg 60deg); display: flex; align-items: center; justify-content: center; }
+        .card-front::after { content: "✦"; font-size: 60px; color: var(--gold); text-shadow: 0 0 20px var(--gold); }
+        .card-back { background: white; transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; }
+        .card-back img { width: 100%; height: 100%; object-fit: cover; }
         #result-area { max-width: 450px; margin-top: 30px; min-height: 140px; }
-        .name { font-size: 1.6rem; font-weight: bold; color: var(--gold); margin-bottom: 12px; letter-spacing: 1px; }
-        .desc { line-height: 1.8; color: #ddd; font-size: 1rem; padding: 0 20px; }
-
-        button { 
-            margin-top: 40px; padding: 14px 45px; font-size: 1rem; cursor: pointer; 
-            background: transparent; color: var(--gold); 
-            border: 1px solid var(--gold); border-radius: 4px;
-            font-weight: bold; transition: all 0.3s;
-            letter-spacing: 2px;
-        }
-        button:hover { 
-            background: var(--gold); color: black;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-        }
+        .name { font-size: 1.6rem; font-weight: bold; color: var(--gold); margin-bottom: 12px; }
+        .desc { line-height: 1.8; color: #ddd; padding: 0 20px; }
+        button { margin-top: 40px; padding: 14px 45px; font-size: 1rem; cursor: pointer; background: transparent; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; font-weight: bold; transition: 0.3s; letter-spacing: 2px; }
+        button:hover { background: var(--gold); color: black; }
     </style>
 </head>
 <body>
 
     <audio id="bgm" loop preload="auto">
-        <source src="https://www.chosic.com/wp-content/uploads/2021/04/Ancient-Rite.mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3" type="audio/mpeg">
     </audio>
     <audio id="sfx-flip" preload="auto">
         <source src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" type="audio/mpeg">
     </audio>
-    
+
     <h1>ARCANUM TAROT</h1>
-    <div class="subtitle">신비로운 지혜가 당신의 길을 비추길</div>
+    <div class="subtitle">심연의 지혜가 당신의 길을 비추길</div>
 
     <div class="card-display">
         <div id="card-inner" onclick="drawCard()">
@@ -180,36 +123,33 @@ let isFlipped = false;
         function drawCard() {
             if (isFlipped) return;
 
-            // 1. 오디오 실행 (함수 내부에서 다시 찾아 실행)
+            // 소리 재생 로직 보강
             const bgm = document.getElementById('bgm');
-            const sfxFlip = document.getElementById('sfx-flip');
+            const sfx = document.getElementById('sfx-flip');
 
-            if (bgm && bgm.paused) {
-                bgm.volume = 0.4;
-                bgm.play().catch(e => console.log("BGM 자동재생 대기"));
+            // 클릭하는 순간 즉시 재생 시도
+            if (bgm) {
+                bgm.volume = 0.3;
+                bgm.play().catch(err => console.log("BGM 재생을 위해 상호작용이 더 필요함"));
             }
-            if (sfxFlip) {
-                sfxFlip.currentTime = 0;
-                sfxFlip.play();
+            if (sfx) {
+                sfx.currentTime = 0;
+                sfx.play();
             }
 
             const randomIndex = Math.floor(Math.random() * tarotData.length);
             const card = tarotData[randomIndex];
             const isReverse = Math.random() > 0.5;
 
-            const imgContainer = document.getElementById('card-result-img');
-            imgContainer.innerHTML = `<img src="${imgBase}${card.img}" id="result-img" alt="${card.name}">`;
+            document.getElementById('card-result-img').innerHTML = `<img src="${imgBase}${card.img}">`;
             
-            const resultImg = document.getElementById('result-img');
             let finalName = card.name;
             let finalDesc = card.desc;
 
             if (isReverse) {
-                resultImg.style.transform = 'rotate(180deg)';
+                document.getElementById('card-result-img').firstChild.style.transform = 'rotate(180deg)';
                 finalName += " (역방향)";
                 finalDesc = "의미가 과잉되거나 왜곡될 수 있습니다. " + card.desc;
-            } else {
-                resultImg.style.transform = 'rotate(0deg)';
             }
 
             document.getElementById('card-name').innerText = finalName;
@@ -223,7 +163,6 @@ let isFlipped = false;
             setTimeout(() => {
                 document.getElementById('card-name').innerText = "운명의 카드를 선택하세요";
                 document.getElementById('card-desc').innerText = "";
-                document.getElementById('card-result-img').innerHTML = "";
                 isFlipped = false;
             }, 400);
         }
