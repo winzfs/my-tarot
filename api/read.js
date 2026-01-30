@@ -6,11 +6,11 @@ export default async function handler(req, res) {
 
   if (!API_KEY) return res.status(200).json({ text: "환경변수 설정 오류" });
 
-  const promptText = `타로 해석가로서 질문 "${question}"에 대해 "${cardName}${isReverse ? '(역방향)' : '(정방향)'}" 카드를 해석해줘. 친절하고 신비로운 말투로 3문장 이내로 작성해줘.`;
+  const promptText = `타로 해석가로서 질문 "${question}"에 대해 "${cardName}${isReverse ? '(역방향)' : '(정방향)'}" 카드를 해석해줘. 친절하게 3문장 이내로.`;
 
   try {
-    // 2.0 Flash는 무료 티어에서 가장 안정적이고 빠릅니다.
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, {
+    // 'gemini-flash-latest'는 무료 티어에서 가장 범용적으로 열려 있는 모델명입니다.
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -21,8 +21,7 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (data.error) {
-      // 혹시라도 에러가 나면 상세 내용을 출력합니다.
-      return res.status(200).json({ text: `[API 에러]: ${data.error.message}` });
+      return res.status(200).json({ text: `[최종 확인 에러]: ${data.error.message}` });
     }
 
     const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
