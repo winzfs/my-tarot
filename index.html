@@ -6,85 +6,115 @@
     <title>ARCANA TAROT | 신비로운 타로점 </title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #d4af37; --deep-blue: #0f0c29; }
-        body { 
-            text-align: center; background: radial-gradient(circle at center, #1b1429 0%, #05050a 100%);
-            color: white; font-family: 'Apple SD Gothic Neo', sans-serif; margin: 0; padding: 20px; 
-            min-height: 100vh; display: flex; flex-direction: column; align-items: center;
-        }
-        h1 { font-size: 2.2rem; margin-top: 30px; color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); letter-spacing: 4px; }
-        
-        #input-area { margin-top: 20px; width: 100%; max-width: 400px; display: block; }
-        #user-question { 
-            width: 100%; padding: 15px; border-radius: 8px; border: 1px solid var(--gold); 
-            background: rgba(255,255,255,0.05); color: white; text-align: center; font-size: 1.1rem;
-            outline: none; transition: 0.3s;
-        }
-        #user-question:focus { background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 10px var(--gold); }
+:root {
+    --gold: #e2b857;
+    --gold-glow: rgba(226, 184, 87, 0.3);
+    --bg-dark: #0a0a0c;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
 
-        #mode-selection { margin-top: 40px; display: block; }
-        .mode-card {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--gold);
-            padding: 25px; margin: 15px; border-radius: 15px; cursor: pointer;
-            transition: 0.3s; width: 280px; display: inline-block; vertical-align: top;
-        }
-        .mode-card:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-5px); }
-        .mode-card h2 { color: var(--gold); margin-top: 0; }
+body {
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(circle at 50% -20%, #1e1e2d 0%, transparent 50%),
+        radial-gradient(circle at 0% 100%, #111119 0%, transparent 40%);
+    color: #e0e0e0;
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 1.6;
+    letter-spacing: -0.02em;
+}
 
-        #tarot-stage { 
-            display: none; 
-            width: 100%; 
-            max-width: 800px; /* 결과창 너비와 일치시킴 */
-            margin: 20px auto; /* 가로 중앙 정렬 */
-                }
-    .cards-container { 
-            display: flex; 
-            justify-content: center; /* 카드 3장을 가운데로 모음 */
-            gap: 20px; 
-            flex-wrap: wrap; 
-            margin-bottom: 30px; 
-            width: 100%;
-        }
-        
-        .card-wrapper { width: 160px; text-align: center; }
-.label { 
-            color: var(--gold); 
-            font-weight: bold; 
-            margin-bottom: 12px; 
-            font-size: 0.9rem; /* 글자 크기를 살짝 줄임 */
-            height: 2.8rem; /* 높이를 2줄 분량으로 미리 고정 (레이아웃 흔들림 방지) */
-            display: flex; /* 세로 중앙 정렬을 위해 추가 */
-            align-items: center;
-            justify-content: center;
-            text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
-            word-break: keep-all; /* 단어 단위로 줄바꿈 */
-            line-height: 1.2;
-            transition: all 0.3s ease;
-        }
+/* 제목: Cinzel 폰트로 클래식하면서 모던하게 */
+h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 3rem;
+    letter-spacing: 8px;
+    margin-bottom: 40px;
+    background: linear-gradient(to bottom, #fff 30%, var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px var(--gold-glow));
+}
 
-        .card-display { width: 100%; height: 260px; perspective: 1000px; }
-        .card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
-        .card-inner.is-flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; border: 2px solid var(--gold); overflow: hidden; }
-        .card-front { background: #1a1a2e; display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--gold); }
-        .card-back { background: white; transform: rotateY(180deg); }
-        .card-back img { width: 100%; height: 100%; object-fit: cover; }
+/* 입력창 및 카드 모드 선택 섹션 */
+#user-question, .mode-card, .result-text {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
 
- .result-text { 
-            margin: 20px auto; /* 중앙 정렬 */
-            padding: 25px; 
-            background: rgba(0,0,0,0.6); 
-            border: 2px solid var(--gold); /* 테두리를 조금 더 강조 */
-            border-radius: 15px; 
-            min-height: 120px; 
-            max-width: 800px; /* 카드 컨테이너 너비와 통일 */
-            width: 100%; 
-            box-sizing: border-box; /* 패딩 때문에 삐져나가지 않게 */
-        }
-        .name { color: var(--gold); font-size: 1.4rem; margin-bottom: 15px; font-weight: bold; }
-        .desc { font-size: 1.05rem; color: #eee; line-height: 1.7; word-break: keep-all; }
+#user-question:focus, .mode-card:hover {
+    border-color: var(--gold);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 20px var(--gold-glow);
+    transform: translateY(-5px);
+}
 
-        button.nav-btn { margin-top: 30px; padding: 10px 25px; background: none; border: 1px solid var(--gold); color: var(--gold); cursor: pointer; border-radius: 5px; }
+/* 카드 라벨 정렬 고정 */
+.label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    height: 3rem;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 카드 이미지 보더 및 그림자 */
+.card-face {
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.card-inner.is-flipped .card-face {
+    border-color: var(--gold);
+}
+
+/* 결과창 내부 스타일 */
+.result-text {
+    max-width: 800px;
+    padding: 40px;
+    margin-top: 50px;
+    border: 1px solid var(--gold-glow);
+}
+
+.name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 25px;
+}
+
+.desc {
+    color: #bbb;
+    font-weight: 300;
+    line-height: 1.8;
+}
+
+/* 버튼 모던화 */
+button.nav-btn, #total-read-btn {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 12px 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button.nav-btn:hover {
+    background: var(--gold);
+    color: black;
+}
     </style>
 </head>
 <body>
