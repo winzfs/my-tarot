@@ -215,6 +215,19 @@ async function flipCard(el, idx) {
     const isReverse = Math.random() > 0.7; // 30% 확률로 역방향
     const cardDisplayName = card.name + (isReverse ? " (역방향)" : " (정방향)");
 
+    // 1. [추가] 하단 이름창에 즉시 뽑은 카드 이름 표시
+    const resName = document.getElementById('res-name');
+    const resDesc = document.getElementById('res-desc');
+    
+    // 카드를 뒤집을 때마다 정보를 갱신합니다.
+    if (totalCount === 1) {
+        resName.innerText = cardDisplayName;
+    } else {
+        // 3카드 모드일 때는 '현재 선택한 카드'를 보여줍니다.
+        const labels = ["과거", "현재", "미래"];
+        resName.innerText = `${labels[idx]} 카드: ${cardDisplayName}`;
+    }
+
     // 화면에 카드 이미지 표시
     const back = document.getElementById(`back-${idx}`);
     back.innerHTML = `<img src="${imgBase}${card.img}" style="${isReverse ? 'transform:rotate(180deg)' : ''}; width:100%; height:100%; object-fit:cover;">`;
@@ -223,9 +236,11 @@ async function flipCard(el, idx) {
     // 선택된 카드 리스트에 저장
     selectedCards.push(cardDisplayName);
 
-    // 모든 카드를 다 뒤집었을 때
+    // 모든 카드를 다 뒤집었을 때의 안내 문구
     if (selectedCards.length === totalCount) {
         showFinalReadButton();
+    } else {
+        resDesc.innerText = "다음 카드도 뒤집어주세요...";
     }
 }
 
