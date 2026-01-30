@@ -6,11 +6,11 @@ export default async function handler(req, res) {
 
   if (!API_KEY) return res.status(200).json({ text: "환경변수 설정 오류" });
 
-  const promptText = `${question}에 대해 타로 카드 ${cardName}${isReverse ? '(역방향)' : '(정방향)'}의 의미를 친절하게 설명해줘.`;
+  const promptText = `타로 해석가로서 질문 "${question}"에 대해 "${cardName}${isReverse ? '(역방향)' : '(정방향)'}" 카드를 해석해줘. 친절하게 3문장 이내로.`;
 
   try {
-    // 주소를 v1으로, 모델을 gemini-pro로 변경
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`, {
+    // [중요] 최신 AI Studio 키는 반드시 v1beta 경로와 구체적인 모델명을 써야 합니다.
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -21,14 +21,15 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (data.error) {
-      // 에러가 나면 구글이 주는 메시지 그대로 출력 (범인을 잡기 위해)
-      return res.status(200).json({ text: `상세 에러: ${data.error.message}` });
+      // 에러가 나면 어떤 모델을 쓸 수 있는지 리스트를 확인하라는 메시지 대신, 
+      // 실제 구글이 보내는 날것의 에러를 출력합니다.
+      return res.status(200).json({ text: `구글 응답 에러: ${data.error.message}` });
     }
 
     const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    res.status(200).json({ text: aiText || "답변을 생성할 수 없습니다." });
+    res.status(200).json({ text: aiText || "AI가 답변을 생성하지 못했습니다." });
 
   } catch (error) {
-    res.status(500).json({ text: "서버 연결 실패" });
+    res.status(500).json({ text: "네트워크 연결 실패" });
   }
 }
