@@ -13,14 +13,14 @@
         }
         h1 { font-size: 2.2rem; margin-top: 30px; color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); letter-spacing: 4px; }
         
-        /* 질문 입력창 스타일 */
-        #input-area { margin-top: 20px; width: 100%; max-width: 400px; }
+        #input-area { margin-top: 20px; width: 100%; max-width: 400px; display: block; }
         #user-question { 
-            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--gold); 
-            background: rgba(0,0,0,0.5); color: white; text-align: center; font-size: 1rem;
+            width: 100%; padding: 15px; border-radius: 8px; border: 1px solid var(--gold); 
+            background: rgba(255,255,255,0.05); color: white; text-align: center; font-size: 1.1rem;
+            outline: none; transition: 0.3s;
         }
+        #user-question:focus { background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 10px var(--gold); }
 
-        /* 모드 선택 화면 */
         #mode-selection { margin-top: 40px; display: block; }
         .mode-card {
             background: rgba(255, 255, 255, 0.05); border: 1px solid var(--gold);
@@ -30,7 +30,6 @@
         .mode-card:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-5px); }
         .mode-card h2 { color: var(--gold); margin-top: 0; }
 
-        /* 타로 스테이지 */
         #tarot-stage { display: none; width: 100%; max-width: 900px; margin-top: 20px; }
         .cards-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
         
@@ -60,7 +59,7 @@
     <h1>ARCANUM TAROT</h1>
 
     <div id="input-area">
-        <input type="text" id="user-question" placeholder="무엇이 궁금하신가요? (예: 연애운, 금전운)">
+        <input type="text" id="user-question" placeholder="고민을 입력하고 카드를 선택하세요...">
     </div>
 
     <div id="mode-selection">
@@ -174,13 +173,8 @@ const tarotData = [
     { name: "펜타클 킹", desc: "현실적인 성공과 풍요의 정점.", img: "1/1c/Penta14.jpg" }
 ];
 function startTarot(count) {
-            // 모드 선택 화면은 숨기지만, 질문 입력창은 계속 보여주거나 
-            // 혹은 입력된 질문을 고정해서 보여주는 것이 좋습니다.
+            // 버튼들만 숨기고 질문 입력칸은 남겨둠
             document.getElementById('mode-selection').style.display = 'none';
-            
-            // 질문창을 숨기지 않고 계속 유지하려면 아래 줄을 지우거나 주석 처리하세요.
-            // document.getElementById('input-area').style.display = 'none'; 
-
             document.getElementById('tarot-stage').style.display = 'block';
             
             const container = document.getElementById('cards-container');
@@ -204,35 +198,29 @@ function startTarot(count) {
         async function flipCard(el, idx) {
             if (el.classList.contains('is-flipped')) return;
 
-            // 소리 재생
             document.getElementById('bgm').play().catch(() => {});
             document.getElementById('sfx-flip').currentTime = 0;
             document.getElementById('sfx-flip').play();
 
             const card = tarotData[Math.floor(Math.random() * tarotData.length)];
             const isReverse = Math.random() > 0.5;
-            
-            // 질문 가져오기
-            const questionInput = document.getElementById('user-question');
-            const question = questionInput.value;
+            const question = document.getElementById('user-question').value;
 
-            // 카드 뒤집기 연출
             const back = document.getElementById(`back-${idx}`);
             back.innerHTML = `<img src="${imgBase}${card.img}" style="${isReverse ? 'transform:rotate(180deg)' : ''}">`;
             el.classList.add('is-flipped');
 
-            // 결과창 업데이트
             const resName = document.getElementById('res-name');
             const resDesc = document.getElementById('res-desc');
             resName.innerText = "🔮 AI가 신탁을 읽는 중...";
-            resDesc.innerText = "질문에 대한 답을 우주에서 가져오고 있습니다...";
+            resDesc.innerText = "우주의 흐름을 분석하고 있습니다...";
 
             try {
                 const response = await fetch('/api/read', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        question: question || "오늘의 전반적인 운세",
+                        question: question || "오늘의 운세",
                         cardName: card.name,
                         isReverse: isReverse
                     })
@@ -244,11 +232,10 @@ function startTarot(count) {
                     resName.innerText = card.name + (isReverse ? " (역방향)" : " (정방향)");
                     resDesc.innerText = data.text;
                 } else {
-                    resDesc.innerText = data.error || "해석을 가져오는 데 실패했습니다. 다시 시도해 주세요.";
+                    resDesc.innerText = "신탁을 가져오지 못했습니다. 다시 시도해 주세요.";
                 }
             } catch (error) {
-                console.error("에러 발생:", error);
-                resDesc.innerText = "서버 연결 오류가 발생했습니다. Vercel 설정을 확인해 주세요.";
+                resDesc.innerText = "서버 연결에 문제가 발생했습니다.";
             }
         }
     </script>
