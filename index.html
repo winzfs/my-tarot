@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcanum Tarot - AI 신탁</title>
+    <title>Arcanum Tarot - 신탁</title>
     <style>
         :root { --gold: #d4af37; --deep-blue: #0f0c29; }
         body { 
@@ -249,7 +249,7 @@ function showFinalReadButton() {
         <div style="margin-top:20px;">
             <p>모든 카드가 선택되었습니다.</p>
             <button id="total-read-btn" class="nav-btn" style="background:var(--gold); color:black; font-weight:bold; width:100%;" onclick="getFinalAIReading()">
-                ✨ AI 종합 해석 보기
+                ✨ 신탁 해석 보기
             </button>
         </div>
     `;
@@ -263,7 +263,7 @@ async function getFinalAIReading() {
 
     btn.disabled = true;
     btn.innerText = "🔮 우주의 흐름을 읽는 중...";
-    resName.innerText = "종합 해석 생성 중...";
+    resName.innerText = "종합 해석 출력 중...";
 
     try {
         const response = await fetch('/api/read', {
