@@ -46,14 +46,19 @@
         }
         
         .card-wrapper { width: 160px; text-align: center; }
-        .label { 
+.label { 
             color: var(--gold); 
             font-weight: bold; 
             margin-bottom: 12px; 
-            font-size: 1rem; 
-            min-height: 1.5rem; /* 이름이 표시될 때 레이아웃이 흔들리지 않게 고정 */
+            font-size: 0.9rem; /* 글자 크기를 살짝 줄임 */
+            height: 2.8rem; /* 높이를 2줄 분량으로 미리 고정 (레이아웃 흔들림 방지) */
+            display: flex; /* 세로 중앙 정렬을 위해 추가 */
+            align-items: center;
+            justify-content: center;
             text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
-            transition: all 0.5s ease; /* 이름이 바뀔 때 부드럽게 */
+            word-break: keep-all; /* 단어 단위로 줄바꿈 */
+            line-height: 1.2;
+            transition: all 0.3s ease;
         }
 
         .card-display { width: 100%; height: 260px; perspective: 1000px; }
