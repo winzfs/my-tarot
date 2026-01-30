@@ -3,39 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>78장 완성형 타로 점</title>
+    <title>프리미엄 78장 타로 점</title>
     <style>
-        :root { --main-color: #e94560; --bg-color: #1a1a2e; }
-        body { text-align: center; background: radial-gradient(circle, #2e1a47 0%, #1a1a2e 100%); color: white; font-family: 'Apple SD Gothic Neo', sans-serif; margin: 0; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-        h1 { margin-bottom: 10px; text-shadow: 0 0 10px rgba(233, 69, 96, 0.8); }
-        .card-display { margin: 20px auto; position: relative; width: 220px; height: 380px; perspective: 1000px; }
-        #card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
+        :root { 
+            --gold: #d4af37; 
+            --deep-blue: #0f0c29;
+            --accent: #e94560;
+        }
+        body { 
+            text-align: center; 
+            background: radial-gradient(circle at center, #1b1429 0%, #05050a 100%);
+            color: white; 
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; 
+            margin: 0; padding: 20px; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        
+        h1 { 
+            font-size: 2rem; margin-bottom: 10px; letter-spacing: 4px;
+            color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+        .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
+
+        /* 카드 전시 스테이지 */
+        .card-display { 
+            margin: 20px auto; position: relative; width: 220px; height: 380px; 
+            perspective: 1200px; 
+        }
+        
+        #card-inner { 
+            width: 100%; height: 100%; position: relative; 
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transform-style: preserve-3d; cursor: pointer; 
+        }
+        #card-inner:hover { transform: scale(1.02); }
         #card-inner.is-flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; border: 3px solid gold; box-shadow: 0 0 20px rgba(0,0,0,0.5); overflow: hidden; }
-        .card-front { background: #16213e; display: flex; align-items: center; justify-content: center; font-size: 80px; }
-        .card-back { background: white; transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; }
-        .card-back img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        #result-area { max-width: 400px; margin-top: 20px; min-height: 120px; }
-        .name { font-size: 1.5rem; font-weight: bold; color: var(--main-color); margin-bottom: 10px; }
-        .desc { line-height: 1.6; color: #ddd; padding: 0 10px; }
-        button { margin-top: 30px; padding: 12px 30px; font-size: 1rem; cursor: pointer; background: var(--main-color); color: white; border: none; border-radius: 50px; font-weight: bold; transition: 0.3s; box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4); }
-        button:hover { transform: translateY(-3px); background: #ff5e78; }
+
+        .card-face { 
+            position: absolute; width: 100%; height: 100%; 
+            backface-visibility: hidden; border-radius: 12px; 
+            border: 2px solid var(--gold); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+        /* 고급스러운 카드 뒷면 패전 */
+        .card-front { 
+            background: #1a1a2e;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 80%),
+                repeating-conic-gradient(from 0deg, #101025 0deg 30deg, #161630 30deg 60deg);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .card-front::after {
+            content: "✦"; font-size: 60px; color: var(--gold);
+            text-shadow: 0 0 20px var(--gold);
+        }
+
+        /* 카드 결과 앞면 */
+        .card-back { 
+            background: white; transform: rotateY(180deg); 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        .card-back img { 
+            width: 100%; height: 100%; object-fit: cover; 
+            transition: transform 0.4s ease;
+        }
+
+        /* 결과 정보 구역 */
+        #result-area { max-width: 450px; margin-top: 30px; min-height: 140px; }
+        .name { font-size: 1.6rem; font-weight: bold; color: var(--gold); margin-bottom: 12px; letter-spacing: 1px; }
+        .desc { line-height: 1.8; color: #ddd; font-size: 1rem; padding: 0 20px; }
+
+        /* 버튼 */
+        button { 
+            margin-top: 40px; padding: 14px 45px; font-size: 1rem; cursor: pointer; 
+            background: transparent; color: var(--gold); 
+            border: 1px solid var(--gold); border-radius: 4px;
+            font-weight: bold; transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+        button:hover { 
+            background: var(--gold); color: black;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
     </style>
 </head>
 <body>
 
-    <h1>🔮 신비로운 타로점</h1>
-    <p>마음을 가다듬고 카드를 클릭하세요</p>
+    <h1>ARCANUM TAROT</h1>
+    <div class="subtitle">신비로운 지혜가 당신의 길을 비추길</div>
 
     <div class="card-display">
         <div id="card-inner" onclick="drawCard()">
-            <div class="card-face card-front">🃏</div>
+            <div class="card-face card-front"></div>
             <div class="card-face card-back" id="card-result-img"></div>
         </div>
     </div>
 
     <div id="result-area">
-        <div id="card-name" class="name">어떤 운명이 기다릴까요?</div>
+        <div id="card-name" class="name">운명의 카드를 선택하세요</div>
         <div id="card-desc" class="desc"></div>
     </div>
 
@@ -44,34 +111,34 @@
     <script>
         const imgBase = "https://upload.wikimedia.org/wikipedia/commons/";
         const tarotData = [
-            // 메이저 아르카나 (0-21)
-            { name: "0. 광대", desc: "순수한 시작, 모험, 자유.", img: "9/90/RWS_Tarot_00_Fool.jpg" },
-            { name: "1. 마법사", desc: "창의력, 능력, 실행력.", img: "d/de/RWS_Tarot_01_Magician.jpg" },
-            { name: "2. 고위 여사제", desc: "직관, 신비, 내면의 지혜.", img: "8/88/RWS_Tarot_02_High_Priestess.jpg" },
-            { name: "3. 여황제", desc: "풍요, 모성애, 자연의 결실.", img: "a/af/RWS_Tarot_03_Empress.jpg" },
-            { name: "4. 황제", desc: "권위, 구조, 리더십과 안정.", img: "c/c3/RWS_Tarot_04_Emperor.jpg" },
-            { name: "5. 교황", desc: "전통, 교육, 영적 인도.", img: "8/8d/RWS_Tarot_05_Hierophant.jpg" },
-            { name: "6. 연인", desc: "사랑, 조화, 중요한 선택.", img: "3/3a/RWS_Tarot_06_Lovers.jpg" },
-            { name: "7. 전차", desc: "승리, 통제력, 빠른 전진.", img: "9/9b/RWS_Tarot_07_Chariot.jpg" },
-            { name: "8. 힘", desc: "인내, 용기, 부드러운 카리스마.", img: "f/f5/RWS_Tarot_08_Strength.jpg" },
-            { name: "9. 은둔자", desc: "내면 탐구, 성찰, 고독한 지혜.", img: "4/4d/RWS_Tarot_09_Hermit.jpg" },
-            { name: "10. 운명의 수레바퀴", desc: "운명적 변화, 새로운 사이클.", img: "3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg" },
-            { name: "11. 정의", desc: "공정함, 진실, 인과응보.", img: "e/e0/RWS_Tarot_11_Justice.jpg" },
-            { name: "12. 매달린 사람", desc: "인내, 희생, 새로운 관점.", img: "2/2b/RWS_Tarot_12_Hanged_Man.jpg" },
-            { name: "13. 죽음", desc: "종결과 변형, 새로운 시작.", img: "d/d7/RWS_Tarot_13_Death.jpg" },
-            { name: "14. 절제", desc: "조화, 균형, 중용의 미덕.", img: "f/f8/RWS_Tarot_14_Temperance.jpg" },
-            { name: "15. 악마", desc: "유혹, 속박, 물질적 집착.", img: "5/55/RWS_Tarot_15_Devil.jpg" },
-            { name: "16. 탑", desc: "갑작스러운 변화, 깨달음의 충격.", img: "5/53/RWS_Tarot_16_Tower.jpg" },
-            { name: "17. 별", desc: "희망, 영감, 치유의 에너지.", img: "d/db/RWS_Tarot_17_Star.jpg" },
-            { name: "18. 달", desc: "불안, 환상, 보이지 않는 적.", img: "7/7f/RWS_Tarot_18_Moon.jpg" },
-            { name: "19. 태양", desc: "성공, 기쁨, 긍정적인 활력.", img: "1/17/RWS_Tarot_19_Sun.jpg" },
-            { name: "20. 심판", desc: "부활, 용서, 과거의 보상.", img: "d/dd/RWS_Tarot_20_Judgement.jpg" },
-            { name: "21. 세계", desc: "완성, 통합, 성공적인 마무리.", img: "f/ff/RWS_Tarot_21_World.jpg" },
-            // 마이너 카드 샘플 (완드, 컵, 소드, 펜타클 순차 추가 가능)
-            { name: "에이스 오브 완드", desc: "새로운 열정, 창의적 시작.", img: "1/11/Wands01.jpg" },
-            { name: "에이스 오브 컵", desc: "감정의 충만함, 새로운 사랑.", img: "3/36/Cups01.jpg" },
-            { name: "에이스 오브 소드", desc: "명료한 결단, 승리, 돌파.", img: "1/1a/Swords01.jpg" },
-            { name: "에이스 오브 펜타클", desc: "물질적 풍요, 실질적인 기회.", img: "f/fd/Penta01.jpg" }
+            // 메이저 아르카나
+            { name: "0. 광대", desc: "순수한 시작, 모험, 자유로운 영혼을 의미합니다.", img: "9/90/RWS_Tarot_00_Fool.jpg" },
+            { name: "1. 마법사", desc: "잠재력, 창의력, 실행에 옮길 준비가 되었음을 나타냅니다.", img: "d/de/RWS_Tarot_01_Magician.jpg" },
+            { name: "2. 고위 여사제", desc: "직관, 신비, 내면의 소리에 귀를 기울여야 할 때입니다.", img: "8/88/RWS_Tarot_02_High_Priestess.jpg" },
+            { name: "3. 여황제", desc: "풍요, 모성애, 결실을 맺는 아름다운 시기를 뜻합니다.", img: "a/af/RWS_Tarot_03_Empress.jpg" },
+            { name: "4. 황제", desc: "권위, 구조, 질서와 리더십을 상징합니다.", img: "c/c3/RWS_Tarot_04_Emperor.jpg" },
+            { name: "5. 교황", desc: "전통, 교육, 영적인 가르침이나 도움을 받을 수 있습니다.", img: "8/8d/RWS_Tarot_05_Hierophant.jpg" },
+            { name: "6. 연인", desc: "사랑, 조화, 중요한 선택의 기로를 의미합니다.", img: "3/3a/RWS_Tarot_06_Lovers.jpg" },
+            { name: "7. 전차", desc: "승리, 의지력, 장애물을 극복하고 나아가는 힘입니다.", img: "9/9b/RWS_Tarot_07_Chariot.jpg" },
+            { name: "8. 힘", desc: "인내와 부드러운 힘으로 상황을 다스릴 수 있습니다.", img: "f/f5/RWS_Tarot_08_Strength.jpg" },
+            { name: "9. 은둔자", desc: "내면의 성찰, 진리를 찾아 홀로 걷는 시간을 뜻합니다.", img: "4/4d/RWS_Tarot_09_Hermit.jpg" },
+            { name: "10. 운명의 수레바퀴", desc: "피할 수 없는 변화와 새로운 운명의 흐름이 시작됩니다.", img: "3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg" },
+            { name: "11. 정의", desc: "공정함, 진실, 명확한 판단이 필요한 시점입니다.", img: "e/e0/RWS_Tarot_11_Justice.jpg" },
+            { name: "12. 매달린 사람", desc: "일시 정지, 새로운 관점에서 세상을 바라보는 지혜입니다.", img: "2/2b/RWS_Tarot_12_Hanged_Man.jpg" },
+            { name: "13. 죽음", desc: "종결과 변형, 새로운 시작을 위한 과감한 정리입니다.", img: "d/d7/RWS_Tarot_13_Death.jpg" },
+            { name: "14. 절제", desc: "균형, 조화, 서로 다른 것을 섞어 평화를 찾습니다.", img: "f/f8/RWS_Tarot_14_Temperance.jpg" },
+            { name: "15. 악마", desc: "유혹, 구속, 물질적인 집착에서 벗어날 필요가 있습니다.", img: "5/55/RWS_Tarot_15_Devil.jpg" },
+            { name: "16. 탑", desc: "갑작스러운 변화, 낡은 체계의 붕괴와 깨달음입니다.", img: "5/53/RWS_Tarot_16_Tower.jpg" },
+            { name: "17. 별", desc: "희망, 영감, 치유와 낙관적인 미래를 상징합니다.", img: "d/db/RWS_Tarot_17_Star.jpg" },
+            { name: "18. 달", desc: "불안, 혼돈, 직관을 믿고 안개를 헤쳐나가야 합니다.", img: "7/7f/RWS_Tarot_18_Moon.jpg" },
+            { name: "19. 태양", desc: "최고의 기쁨, 성공, 활기찬 에너지가 가득합니다.", img: "1/17/RWS_Tarot_19_Sun.jpg" },
+            { name: "20. 심판", desc: "부활, 용서, 과거의 노력에 대한 보상을 받습니다.", img: "d/dd/RWS_Tarot_20_Judgement.jpg" },
+            { name: "21. 세계", desc: "완성, 통합, 성공적인 마무리를 의미합니다.", img: "f/ff/RWS_Tarot_21_World.jpg" },
+            // 에이스 시리즈
+            { name: "에이스 오브 완드", desc: "새로운 열정과 창의적인 영감이 샘솟습니다.", img: "1/11/Wands01.jpg" },
+            { name: "에이스 오브 컵", desc: "감정의 시작, 새로운 사랑이나 평화가 찾아옵니다.", img: "3/36/Cups01.jpg" },
+            { name: "에이스 오브 소드", desc: "정신적인 명료함과 승리, 단호한 결단을 의미합니다.", img: "1/1a/Swords01.jpg" },
+            { name: "에이스 오브 펜타클", desc: "현실적인 행운, 금전적 이득과 안정을 뜻합니다.", img: "f/fd/Penta01.jpg" }
         ];
 
         let isFlipped = false;
@@ -79,35 +146,27 @@
         function drawCard() {
             if (isFlipped) return;
 
-            // 1. 랜덤 카드 선택
             const randomIndex = Math.floor(Math.random() * tarotData.length);
             const card = tarotData[randomIndex];
-
-            // 2. 역방향 여부 결정 (50% 확률)
             const isReverse = Math.random() > 0.5;
 
-            // 3. 이미지 출력 및 회전 적용
             const imgContainer = document.getElementById('card-result-img');
             imgContainer.innerHTML = `<img src="${imgBase}${card.img}" id="result-img" alt="${card.name}">`;
             
             const resultImg = document.getElementById('result-img');
-            
-            // 4. 결과 텍스트 설정
             let finalName = card.name;
             let finalDesc = card.desc;
 
             if (isReverse) {
                 resultImg.style.transform = 'rotate(180deg)';
                 finalName += " (역방향)";
-                finalDesc = "의미가 반대로 작용하거나, 과도한 상태를 경고합니다. " + card.desc;
+                finalDesc = "의미가 과잉되거나 왜곡될 수 있습니다. 주의 깊은 성찰이 필요합니다. " + card.desc;
             } else {
                 resultImg.style.transform = 'rotate(0deg)';
             }
 
             document.getElementById('card-name').innerText = finalName;
             document.getElementById('card-desc').innerText = finalDesc;
-            
-            // 5. 애니메이션 시작
             document.getElementById('card-inner').classList.add('is-flipped');
             isFlipped = true;
         }
@@ -115,11 +174,11 @@
         function resetCard() {
             document.getElementById('card-inner').classList.remove('is-flipped');
             setTimeout(() => {
-                document.getElementById('card-name').innerText = "어떤 운명이 기다릴까요?";
+                document.getElementById('card-name').innerText = "운명의 카드를 선택하세요";
                 document.getElementById('card-desc').innerText = "";
                 document.getElementById('card-result-img').innerHTML = "";
                 isFlipped = false;
-            }, 300);
+            }, 400);
         }
     </script>
 </body>
