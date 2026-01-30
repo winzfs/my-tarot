@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>나의 타로 사이트</title>
+    <style>
+        body { text-align: center; background-color: #1a1a2e; color: white; font-family: 'Apple SD Gothic Neo', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; }
+        .card-container { cursor: pointer; transition: transform 0.3s; }
+        .card-container:hover { transform: scale(1.05); }
+        #card-image { width: 200px; height: 320px; border: 3px solid #e94560; border-radius: 15px; background-color: #16213e; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 80px; box-shadow: 0 0 20px rgba(233, 69, 96, 0.5); }
+        #result { margin-top: 20px; font-size: 1.8rem; font-weight: bold; color: #e94560; }
+        #description { margin-top: 10px; color: #fdfdfd; max-width: 300px; line-height: 1.5; }
+        button { margin-top: 30px; padding: 12px 24px; font-size: 1rem; cursor: pointer; background: #e94560; color: white; border: none; border-radius: 8px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>🔮 오늘의 타로</h1>
+
+    <div class="card-container" onclick="drawCard()">
+        <div id="card-image">🃏</div>
+        <div id="result">카드를 터치하세요</div>
+        <div id="description"></div>
+    </div>
+
+    <button onclick="drawCard()">다시 뽑기</button>
+
+    <script>
+        const tarotCards = [
+            { name: "0. 광대 (The Fool)", desc: "새로운 시작, 모험심, 순수한 마음이 필요한 시기입니다." },
+            { name: "1. 마법사 (The Magician)", desc: "당신은 준비되었습니다. 당신의 능력을 마음껏 발휘하세요!" },
+            { name: "2. 고위 여사제 (The High Priestess)", desc: "직관을 믿으세요. 내면의 소리에 귀를 기울여야 할 때입니다." },
+            { name: "10. 운명의 수레바퀴", desc: "변화의 바람이 불고 있습니다. 흐름에 몸을 맡기세요." },
+            { name: "19. 태양 (The Sun)", desc: "밝은 에너지와 성공이 기다리고 있습니다. 자신감을 가지세요!" }
+        ];
+
+        function drawCard() {
+            const randomIndex = Math.floor(Math.random() * tarotCards.length);
+            const card = tarotCards[randomIndex];
+            document.getElementById('result').innerText = card.name;
+            document.getElementById('description').innerText = card.desc;
+            document.getElementById('card-image').innerText = "✨";
+        }
+    </script>
+</body>
+</html>
