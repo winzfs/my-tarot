@@ -218,27 +218,32 @@ function startTarot(count) {
             resName.innerText = "🔮 AI가 신탁을 읽는 중...";
             resDesc.innerText = "우주의 흐름을 분석하고 있습니다. 잠시만 기다려주세요.";
 
-            try {
-                // Vercel 서버 함수 호출
-                const response = await fetch('/api/read', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        question: question || "오늘의 운세",
-                        cardName: card.name,
-                        isReverse: isReverse
-                    })
-                });
+try {
+    const response = await fetch('/api/read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            question: question || "오늘의 운세",
+            cardName: card.name,
+            isReverse: isReverse
+        })
+    });
 
-                const data = await response.json();
-                
-                resName.innerText = card.name + (isReverse ? " (역방향)" : " (정방향)");
-                resDesc.innerText = data.text; // AI가 보내준 해석 출력
-            } catch (error) {
-                console.error(error);
-                resDesc.innerText = "통신이 원활하지 않습니다. 다시 시도해 주세요.";
-            }
-        }
+    const data = await response.json();
+    
+    // 만약 data.text가 없으면 전체 데이터를 출력해보고, 있으면 출력
+    if (data && data.text) {
+        resName.innerText = card.name + (isReverse ? " (역방향)" : " (정방향)");
+        resDesc.innerText = data.text;
+    } else {
+        // AI 응답 구조가 예상과 다를 때 대비
+        console.log("AI 응답 데이터:", data);
+        resDesc.innerText = "해석 데이터를 읽는 중 문제가 발생했습니다.";
+    }
+} catch (error) {
+    console.error("에러 발생:", error);
+    resDesc.innerText = "서버와 연결할 수 없습니다.";
+}
     </script>
 </body>
 </html>
