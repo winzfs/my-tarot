@@ -4,13 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@font-face {
-  font-family: "Press Start 2P";
-  src: url("https://fonts.gstatic.com/s/pressstart2p/v16/e3t4euO8T-267oIAQAu6jDQyK0nSgPJE4580.woff2")
-    format("woff2");
-  font-weight: 400;
-  font-style: normal;
-}
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 :root {
   --radius: 0.25rem;
@@ -127,6 +121,10 @@
 }
 
 /* Retro scanline effect */
+.scanlines {
+  position: relative;
+}
+
 .scanlines::after {
   content: "";
   position: absolute;

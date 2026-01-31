@@ -20,6 +20,8 @@ const INTERACTION_DISTANCE = 40
 export function PixelGame({ onInteract, isDialogOpen }: PixelGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [playerPos, setPlayerPos] = useState<Position>({ x: 80, y: 180 })
+  
+  console.log("[v0] PixelGame rendered, canvasRef:", canvasRef.current)
   const [showInteractHint, setShowInteractHint] = useState(false)
   const keysRef = useRef<Set<string>>(new Set())
   const animationFrameRef = useRef<number>(0)

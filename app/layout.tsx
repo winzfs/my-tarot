@@ -1,12 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Press_Start_2P } from "next/font/google"
 import "./globals.css"
-
-const pixelFont = Press_Start_2P({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-pixel",
-})
 
 export const metadata: Metadata = {
   title: "MYSTIC TAROT | 8-bit Fortune Teller",
@@ -36,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className="dark">
-      <body className={`${pixelFont.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         {children}
       </body>
     </html>

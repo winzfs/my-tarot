@@ -7,6 +7,8 @@ import { TarotChat } from "@/components/game/tarot-chat"
 export default function TarotPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
+  console.log("[v0] TarotPage rendered, isDialogOpen:", isDialogOpen)
+
   return (
     <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       {/* Title */}
