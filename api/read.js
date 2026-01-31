@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   const cardInfo = cards && Array.isArray(cards) ? cards.join(', ') : "선택된 카드 없음";
 
   const promptText = `타로 해석가로서 질문 "${question || '오늘의 운세'}"에 대해 뽑힌 카드 [${cardInfo}]를 해석해줘. 
-  첫 줄에는 이 해석에 어울리는 신비로운 제목을 '## [제목]' 형식으로 작성하고, 그 다음 줄부터 과거, 현재, 미래의 흐름을 친절하게 5문장 내외로 대답해줘.`;
+  첫 줄에는 이 해석에 어울리는 신비로운 제목을 '## [제목]' 형식으로 작성하고, 그 다음 줄부터 과거, 현재, 미래의 흐름을 친절하게 3문장 내외로 대답해줘.`;
 
   try {
     // [핵심] 모델명을 정확히 'gemini-flash-latest'로 설정하고 v1beta 엔드포인트를 사용합니다.
