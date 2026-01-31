@@ -8,7 +8,7 @@
     <style>
         :root {
             --gold: #e2b857;
-            --gold-glow: rgba(226, 184, 87, 0.3);
+            --gold-glow: rgba(226, 184, 87, 0.4);
             --bg-dark: #0a0a0c;
             --glass: rgba(255, 255, 255, 0.05);
         }
@@ -26,17 +26,17 @@
             margin: 15px 0; text-shadow: 0 0 10px var(--gold-glow); text-align: center;
         }
 
-        /* 게임 컨테이너 */
+        /* 게임 영역 */
         #game-container {
             width: 100%; max-width: 500px; height: 300px;
-            background: #111; border: 2px solid var(--gold);
+            background: #000; border: 2px solid var(--gold);
             margin: 0 auto; position: relative; border-radius: 15px;
-            overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden; box-shadow: 0 0 25px rgba(0,0,0,0.7);
             touch-action: none;
         }
-        #gameCanvas { width: 100%; height: 100%; display: block; }
+        #gameCanvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
 
-        /* 모바일 컨트롤러 */
+        /* 컨트롤러 */
         #mobile-controls {
             display: grid; grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(2, 60px);
             gap: 10px; justify-content: center; margin-top: 15px;
@@ -49,7 +49,8 @@
         }
         .ctrl-btn:active { background: var(--gold); color: black; }
 
-        #input-area, #mode-selection, #tarot-stage { display: none; width: 100%; max-width: 600px; margin-top: 20px; }
+        /* UI 영역 */
+        #input-area, #mode-selection, #tarot-stage { display: none; width: 100%; max-width: 500px; margin-top: 20px; }
         .user-info-group { display: flex; gap: 10px; margin-bottom: 10px; }
         input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--gold); background: var(--glass); color: white; outline: none; box-sizing: border-box; }
         
@@ -59,18 +60,18 @@
         }
         .mode-card:hover { background: rgba(226, 184, 87, 0.1); }
 
-        .cards-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .cards-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
         .card-wrapper { width: 100px; text-align: center; }
         .card-display { height: 150px; perspective: 1000px; }
-        .card-inner { width: 100%; height: 100%; position: relative; transition: 0.6s; transform-style: preserve-3d; cursor: pointer; }
+        .card-inner { width: 100%; height: 100%; position: relative; transition: 0.8s; transform-style: preserve-3d; cursor: pointer; }
         .card-inner.is-flipped { transform: rotateY(180deg); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; border: 1px solid var(--gold); }
-        .card-front { background: #1a1a2e; display: flex; align-items: center; justify-content: center; color: var(--gold); }
+        .card-front { background: #1a1a2e; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 1.5rem; }
         .card-back { transform: rotateY(180deg); background: white; overflow: hidden; }
         .card-back img { width: 100%; height: 100%; object-fit: cover; }
 
-        .result-text { background: var(--glass); padding: 20px; border-radius: 15px; border: 1px solid var(--gold-glow); margin-top: 20px; line-height: 1.6; }
-        .nav-btn { background: var(--gold); color: black; border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .result-text { background: var(--glass); padding: 20px; border-radius: 15px; border: 1px solid var(--gold-glow); line-height: 1.8; margin-top: 15px; min-height: 50px; }
+        .nav-btn { background: var(--gold); color: black; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; }
     </style>
 </head>
 <body>
@@ -98,68 +99,58 @@
     </div>
 
     <div id="mode-selection">
-        <div class="mode-card" onclick="startTarot(1)"><h3>원 카드 (오늘의 운세)</h3></div>
-        <div class="mode-card" onclick="startTarot(3)"><h3>쓰리 카드 (과거·현재·미래)</h3></div>
+        <div class="mode-card" onclick="startTarot(1)"><h3>오늘의 운세 (1장)</h3><p>간결한 조언을 듣습니다.</p></div>
+        <div class="mode-card" onclick="startTarot(3)"><h3>과거·현재·미래 (3장)</h3><p>운명의 흐름을 짚어봅니다.</p></div>
     </div>
 
     <div id="tarot-stage">
         <div class="cards-container" id="cards-container"></div>
-        <div class="result-text" id="result-text">카드를 뒤집어주세요.</div>
-        <button class="nav-btn" onclick="location.reload()">다시 하기</button>
+        <div class="result-text" id="result-display">카드를 클릭하여 뒤집어주세요.</div>
+        <button id="final-btn" class="nav-btn" style="display:none;" onclick="getFinalRead()">운명의 해석 듣기</button>
+        <button class="nav-btn" style="background:#444; color:white;" onclick="location.reload()">다시 하기</button>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
+        // --- 리소스 ---
+        const bgImg = new Image();
+        bgImg.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Olaus_Magnus_-_On_the_Casting_of_Lots.jpg/500px-Olaus_Magnus_-_On_the_Casting_of_Lots.jpg';
+        
+        const spriteImg = new Image();
+        spriteImg.src = 'https://raw.githubusercontent.com/flower-pot/open-rpg/master/assets/images/characters/hero.png';
+
         let keys = {};
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
 
-        const player = { x: 50, y: 150, size: 20, speed: 4 };
-        const oracle = { x: 420, y: 130, size: 40 };
-
-        function drawGame() {
-            // 1. 배경 (방 느낌)
-            ctx.fillStyle = "#1a1a2e"; // 바닥
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = "#0a0a0c"; // 벽면
-            ctx.fillRect(0, 0, canvas.width, 80);
-            
-            // 카페트 효과
-            ctx.fillStyle = "#4a1a1a";
-            ctx.fillRect(100, 100, 300, 150);
-            ctx.strokeStyle = "#e2b857";
-            ctx.strokeRect(100, 100, 300, 150);
-
-            // 2. 점성술사 (이미지 대신 도형으로 구현)
-            // 머리/몸통
-            ctx.fillStyle = "#e2b857";
-            ctx.beginPath();
-            ctx.arc(oracle.x + 20, oracle.y + 15, 15, 0, Math.PI * 2);
-            ctx.fill();
-            // 옷
-            ctx.fillStyle = "#3a1f5d";
-            ctx.fillRect(oracle.x, oracle.y + 25, 40, 30);
-            // 신비로운 오라
-            ctx.shadowBlur = 20; ctx.shadowColor = "#e2b857";
-            ctx.strokeStyle = "#e2b857";
-            ctx.strokeRect(oracle.x - 5, oracle.y - 5, 50, 65);
-            ctx.shadowBlur = 0;
-
-            // 3. 플레이어 (이미지 대신 귀여운 캐릭터)
-            ctx.fillStyle = "#4a90e2";
-            ctx.fillRect(player.x, player.y, player.size, player.size);
-            ctx.fillStyle = "white"; // 눈
-            ctx.fillRect(player.x + 12, player.y + 5, 4, 4);
-        }
+        const player = { x: 50, y: 150, frame: 0, dir: 0, speed: 4 };
+        const oracle = { x: 420, y: 130 };
 
         function update() {
-            if (keys['ArrowUp'] && player.y > 85) player.y -= player.speed;
-            if (keys['ArrowDown'] && player.y < 270) player.y += player.speed;
-            if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
-            if (keys['ArrowRight'] && player.x < 470) player.x += player.speed;
+            let moving = false;
+            if (keys['ArrowUp'] && player.y > 80) { player.y -= player.speed; player.dir = 3; moving = true; }
+            if (keys['ArrowDown'] && player.y < 250) { player.y += player.speed; player.dir = 0; moving = true; }
+            if (keys['ArrowLeft'] && player.x > 0) { player.x -= player.speed; player.dir = 1; moving = true; }
+            if (keys['ArrowRight'] && player.x < 460) { player.x += player.speed; player.dir = 2; moving = true; }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.globalAlpha = 0.6;
+            ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+            ctx.globalAlpha = 1.0;
+
+            // NPC (점성술사)
+            ctx.shadowBlur = 15; ctx.shadowColor = "gold";
+            ctx.fillStyle = "rgba(226, 184, 87, 0.8)";
+            ctx.beginPath(); ctx.arc(oracle.x + 20, oracle.y + 20, 15, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // 플레이어 애니메이션
+            if(moving) player.frame = Math.floor(Date.now()/150) % 3; else player.frame = 1;
+            if(spriteImg.complete) {
+                ctx.drawImage(spriteImg, player.frame * 32, player.dir * 32, 32, 32, player.x, player.y, 40, 40);
+            }
 
             const dist = Math.sqrt(Math.pow(player.x - oracle.x, 2) + Math.pow(player.y - oracle.y, 2));
             if (dist < 40) {
@@ -168,12 +159,10 @@
                 document.getElementById('mode-selection').style.display = 'block';
                 return;
             }
-
-            drawGame();
             requestAnimationFrame(update);
         }
 
-        // --- 타로 데이터 (78장 전체) ---
+        // --- 78장 타로 데이터 ---
         const imgBase = "https://commons.wikimedia.org/wiki/Special:FilePath/";
         const tarotData = [
             { name: "0. 광대", img: "RWS_Tarot_00_Fool.jpg" }, { name: "1. 마법사", img: "RWS_Tarot_01_Magician.jpg" },
@@ -194,54 +183,63 @@
         ];
 
         let selectedCards = [];
-        let totalToPick = 0;
+        let totalPick = 0;
 
         function startTarot(count) {
-            totalToPick = count;
-            selectedCards = [];
+            totalPick = count;
             document.getElementById('mode-selection').style.display = 'none';
             document.getElementById('input-area').style.display = 'none';
             document.getElementById('tarot-stage').style.display = 'block';
-            
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
             for(let i=0; i<count; i++) {
-                container.innerHTML += `<div class="card-wrapper"><div class="card-display"><div class="card-inner" onclick="flipCard(this, ${i})"><div class="card-face card-front">✦</div><div class="card-face card-back" id="back-${i}"></div></div></div></div>`;
+                container.innerHTML += `
+                    <div class="card-wrapper">
+                        <div class="card-display">
+                            <div class="card-inner" onclick="flipCard(this, ${i})">
+                                <div class="card-face card-front">✦</div>
+                                <div class="card-face card-back" id="back-${i}"></div>
+                            </div>
+                        </div>
+                    </div>`;
             }
         }
 
-        async function flipCard(el, idx) {
+        function flipCard(el, idx) {
             if (el.classList.contains('is-flipped')) return;
-            const card = tarotData[Math.floor(Math.random() * tarotData.length)];
-            const isRev = Math.random() > 0.3;
-            const back = document.getElementById(`back-${idx}`);
-            back.innerHTML = `<img src="${imgBase}${card.img}" style="${isRev?'transform:rotate(180deg)':''}">`;
+            const randomCard = tarotData[Math.floor(Math.random() * tarotData.length)];
+            const isReversed = Math.random() > 0.3;
+            const backFace = document.getElementById(`back-${idx}`);
+            backFace.innerHTML = `<img src="${imgBase}${randomCard.img}" style="${isReversed ? 'transform:rotate(180deg)' : ''}">`;
             el.classList.add('is-flipped');
-            selectedCards.push(card.name + (isRev ? "(역방향)" : "(정방향)"));
+            selectedCards.push(randomCard.name + (isReversed ? "(역방향)" : "(정방향)"));
 
-            if (selectedCards.length === totalToPick) {
-                document.getElementById('result-text').innerHTML = `<button class="nav-btn" onclick="getFinalRead()">운명의 해석 듣기</button>`;
+            if(selectedCards.length === totalPick) {
+                document.getElementById('final-btn').style.display = 'block';
+                document.getElementById('result-display').innerText = "카드를 모두 뽑았습니다. 해석을 요청하세요.";
             }
         }
 
         async function getFinalRead() {
-            const resBox = document.getElementById('result-text');
-            resBox.innerText = "🔮 우주의 기운을 모으는 중...";
+            const display = document.getElementById('result-display');
+            display.innerText = "🔮 우주의 기운을 읽어 해석을 준비하고 있습니다...";
+            document.getElementById('final-btn').style.display = 'none';
+
             try {
-                const resp = await fetch('/api/read', {
+                const response = await fetch('/api/read', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        name: document.getElementById('user-name').value || "여행자",
+                        name: document.getElementById('user-name').value || "방문자",
                         birth: document.getElementById('user-birth').value,
-                        question: document.getElementById('user-question').value || "운세",
+                        question: document.getElementById('user-question').value || "전체 운세",
                         cards: selectedCards
                     })
                 });
-                const data = await resp.json();
-                resBox.innerText = data.text;
-            } catch(e) {
-                resBox.innerText = "통신 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+                const data = await response.json();
+                display.innerText = data.text;
+            } catch (e) {
+                display.innerText = "통신에 실패했습니다. (서버 연결을 확인해주세요)";
             }
         }
 
