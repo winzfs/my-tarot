@@ -29,6 +29,29 @@ h1 {
     margin: 40px 0; text-shadow: 0 0 15px var(--gold-glow);
 }
 
+        <h1>ARCANUM TAROT</h1>
+
+<div id="game-container">
+    <canvas id="gameCanvas" width="600" height="350"></canvas>
+    <div id="game-ui">▲ 화살표 키로 움직여 점성술사(황금색)에게 다가가세요</div>
+</div>
+
+<div id="input-area" style="display:none;">
+    <input type="text" id="user-question" placeholder="고민을 입력하고 카드를 선택하세요...">
+</div>
+
+<div id="mode-selection" style="display:none;">
+    <div class="mode-card" onclick="startTarot(1)">
+        <h2>원 카드</h2>
+        <p>오늘의 운세나 단순한 조언</p>
+    </div>
+    <div class="mode-card" onclick="startTarot(3)">
+        <h2>쓰리 카드</h2>
+        <p>과거-현재-미래의 흐름 분석</p>
+    </div>
+</div>
+
+
 /* 1. 입력 및 선택 영역 (복구) */
 #input-area, #mode-selection {
     width: 100%; max-width: 600px; display: block; margin-bottom: 30px;
@@ -126,6 +149,38 @@ button.nav-btn {
 }
 
 button.nav-btn:hover { background: var(--gold); color: black; }
+    /* 게임 컨테이너 스타일 */
+#game-container {
+    width: 100%;
+    max-width: 600px;
+    height: 350px;
+    background: #050505;
+    border: 2px solid var(--gold);
+    margin: 20px 0;
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated; /* 픽셀 느낌 강조 */
+}
+
+#game-ui {
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    text-align: center;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    text-shadow: 0 0 5px black;
+    pointer-events: none;
+}
+
     </style>
 </head>
 <body>
@@ -333,6 +388,72 @@ async function getFinalAIReading() {
         btn.disabled = false;
     }
 }
+
+        // --- 픽셀 게임 로직 시작 ---
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// 게임 객체 (플레이어와 점성술사)
+const player = { x: 50, y: 175, size: 20, speed: 4, color: '#4a90e2' };
+const oracle = { x: 500, y: 155, size: 40, color: '#e2b857' };
+let keys = {};
+
+window.addEventListener('keydown', e => keys[e.code] = true);
+window.addEventListener('keyup', e => keys[e.code] = false);
+
+function gameLoop() {
+    // 플레이어 이동
+    if (keys['ArrowUp'] && player.y > 0) player.y -= player.speed;
+    if (keys['ArrowDown'] && player.y < canvas.height - player.size) player.y += player.speed;
+    if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
+    if (keys['ArrowRight'] && player.x < canvas.width - player.size) player.x += player.speed;
+
+    // 그리기
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 배경 바닥 느낌
+    ctx.strokeStyle = '#1a1a2e';
+    for(let i=0; i<canvas.width; i+=40) {
+        ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i, canvas.height); ctx.stroke();
+    }
+
+    // 점성술사 (글로우 효과)
+    ctx.shadowBlur = 20; ctx.shadowColor = oracle.color;
+    ctx.fillStyle = oracle.color;
+    ctx.fillRect(oracle.x, oracle.y, oracle.size, oracle.size);
+
+    // 플레이어
+    ctx.shadowBlur = 10; ctx.shadowColor = player.color;
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.size, player.size);
+    ctx.shadowBlur = 0;
+
+    // 충돌 감지 (근접하면 이벤트 발생)
+    const dist = Math.sqrt(Math.pow(player.x - oracle.x, 2) + Math.pow(player.y - oracle.y, 2));
+    if (dist < 40) {
+        onMetOracle();
+        return; // 게임 루프 종료
+    }
+
+    requestAnimationFrame(gameLoop);
+}
+
+function onMetOracle() {
+    // 게임 화면 부드럽게 사라짐
+    document.getElementById('game-container').style.display = 'none';
+    
+    // 타로 입력창과 모드 선택 등장
+    document.getElementById('input-area').style.display = 'block';
+    document.getElementById('mode-selection').style.display = 'block';
+    
+    // 효과음 한 번 재생 (선택)
+    document.getElementById('sfx-flip').play();
+}
+
+// 스크립트 로드 시 게임 시작
+gameLoop();
+// --- 픽셀 게임 로직 끝 ---
+
     </script>
 </body>
 </html>
