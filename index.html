@@ -236,7 +236,7 @@
             const btn = event.target;
             btn.disabled = true; btn.innerText = "🔮 읽는 중...";
             try {
-                const response = await fetch('/api/read', {
+                const response = await fetch('/api/tarot', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
