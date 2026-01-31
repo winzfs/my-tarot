@@ -3,184 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARCANA TAROT | 신비로운 타로점</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>ARCANA TAROT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #e2b857;
-            --gold-glow: rgba(226, 184, 87, 0.4);
-            --bg-dark: #0a0a0c;
-            --glass: rgba(255, 255, 255, 0.05);
-        }
+        :root { --gold: #e2b857; --bg: #0a0a0c; }
+        body { background: var(--bg); color: #e0e0e0; font-family: 'Noto Sans KR', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        
+        /* 로딩 화면 */
+        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:black; display:flex; justify-content:center; align-items:center; z-index:999; color:var(--gold); font-family:'Cinzel'; }
 
-        body {
-            background: var(--bg-dark);
-            background-image: radial-gradient(circle at 50% 20%, #1a1a2e 0%, var(--bg-dark) 80%);
-            color: #e0e0e0; font-family: 'Noto Sans KR', sans-serif;
-            margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; overflow-x: hidden;
-        }
-
-        h1 {
-            font-family: 'Cinzel', serif; font-size: 1.8rem; letter-spacing: 3px; color: var(--gold);
-            margin: 15px 0; text-shadow: 0 0 10px var(--gold-glow); text-align: center;
-        }
-
-        /* 게임 영역 */
+        h1 { font-family: 'Cinzel', serif; color: var(--gold); margin: 15px 0; text-align: center; letter-spacing: 3px; }
+        
         #game-container {
-            width: 100%; max-width: 500px; height: 320px;
-            background: #000; border: 2px solid var(--gold);
-            margin: 0 auto; position: relative; border-radius: 15px;
-            overflow: hidden; box-shadow: 0 0 25px rgba(0,0,0,0.7);
-            touch-action: none;
+            width: 95vw; max-width: 500px; height: 320px;
+            border: 2px solid var(--gold); position: relative; border-radius: 15px;
+            background: #111; overflow: hidden; touch-action: none;
         }
         #gameCanvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
 
-        /* 컨트롤러 */
-        #mobile-controls {
-            display: grid; grid-template-columns: repeat(3, 65px); grid-template-rows: repeat(2, 65px);
-            gap: 10px; justify-content: center; margin-top: 15px;
-        }
+        #mobile-controls { display: grid; grid-template-columns: repeat(3, 65px); gap: 10px; margin-top: 20px; justify-content: center; }
         .ctrl-btn {
-            width: 65px; height: 65px; background: var(--glass); border: 1px solid var(--gold);
-            border-radius: 50%; color: var(--gold); display: flex; align-items: center;
-            justify-content: center; font-size: 1.2rem; user-select: none;
-            backdrop-filter: blur(5px); transition: 0.1s;
+            width: 65px; height: 65px; background: rgba(255,255,255,0.1); border: 1px solid var(--gold);
+            border-radius: 50%; color: var(--gold); display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer; user-select: none;
         }
-        .ctrl-btn:active { background: var(--gold); color: black; transform: scale(0.9); }
 
-        /* UI 영역 */
-        #ui-layer { display: none; width: 100%; max-width: 500px; margin-top: 20px; }
-        .user-info-group { display: flex; gap: 10px; margin-bottom: 10px; }
-        input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid var(--gold); background: var(--glass); color: white; outline: none; box-sizing: border-box; }
+        #ui-layer { display: none; width: 90%; max-width: 500px; margin-top: 20px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid var(--gold); background: #1a1a1a; color: white; box-sizing: border-box; }
+        .mode-card { background: rgba(226, 184, 87, 0.1); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; margin-top: 10px; cursor: pointer; }
         
-        .mode-card {
-            background: var(--glass); border: 1px solid var(--gold); padding: 20px; margin-bottom: 15px;
-            border-radius: 15px; cursor: pointer; text-align: center; transition: 0.3s;
-        }
-        .mode-card:hover { background: rgba(226, 184, 87, 0.1); }
-
-        .cards-container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-        .card-wrapper { width: 100px; perspective: 1000px; }
-        .card-inner { width: 100%; height: 150px; position: relative; transition: 0.8s; transform-style: preserve-3d; cursor: pointer; }
+        .cards-container { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+        .card-inner { width: 80px; height: 130px; position: relative; transform-style: preserve-3d; transition: 0.6s; cursor: pointer; }
         .card-inner.is-flipped { transform: rotateY(180deg); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; border: 1px solid var(--gold); }
         .card-front { background: #1a1a2e; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 1.5rem; }
-        .card-back { transform: rotateY(180deg); background: white; overflow: hidden; }
+        .card-back { background: white; transform: rotateY(180deg); overflow: hidden; }
         .card-back img { width: 100%; height: 100%; object-fit: cover; }
-
-        .result-text { background: var(--glass); padding: 20px; border-radius: 15px; border: 1px solid var(--gold-glow); line-height: 1.8; margin-top: 15px; white-space: pre-wrap; }
-        .btn { background: var(--gold); color: black; border: none; padding: 15px 25px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; }
+        
+        .result-text { padding: 15px; line-height: 1.8; background: rgba(255,255,255,0.05); border-radius: 12px; margin-top: 15px; border: 1px solid var(--gold); text-align: left; font-size: 0.9rem; }
+        .btn { background: var(--gold); color: black; border: none; padding: 12px; border-radius: 25px; font-weight: bold; margin-top: 10px; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
+    <div id="loading">LOADING DESTINY...</div>
+
     <h1>ARCANUM TAROT</h1>
 
-    <div id="game-wrapper" style="width:100%; max-width:500px;">
+    <div id="game-wrapper">
         <div id="game-container">
             <canvas id="gameCanvas" width="500" height="320"></canvas>
         </div>
         <div id="mobile-controls">
-            <div class="ctrl-btn" style="grid-column:2" ontouchstart="keys['ArrowUp']=true" ontouchend="keys['ArrowUp']=false">▲</div>
-            <div class="ctrl-btn" style="grid-column:1; grid-row:2" ontouchstart="keys['ArrowLeft']=true" ontouchend="keys['ArrowLeft']=false">◀</div>
-            <div class="ctrl-btn" style="grid-column:2; grid-row:2" ontouchstart="keys['ArrowDown']=true" ontouchend="keys['ArrowDown']=false">▼</div>
-            <div class="ctrl-btn" style="grid-column:3; grid-row:2" ontouchstart="keys['ArrowRight']=true" ontouchend="keys['ArrowRight']=false">▶</div>
+            <div style="grid-column:2" class="ctrl-btn" ontouchstart="keys['ArrowUp']=true" ontouchend="keys['ArrowUp']=false">▲</div>
+            <div style="grid-column:1" class="ctrl-btn" ontouchstart="keys['ArrowLeft']=true" ontouchend="keys['ArrowLeft']=false">◀</div>
+            <div style="grid-column:2" class="ctrl-btn" ontouchstart="keys['ArrowDown']=true" ontouchend="keys['ArrowDown']=false">▼</div>
+            <div style="grid-column:3" class="ctrl-btn" ontouchstart="keys['ArrowRight']=true" ontouchend="keys['ArrowRight']=false">▶</div>
         </div>
     </div>
 
     <div id="ui-layer">
-        <div id="step-input">
-            <div class="user-info-group">
-                <input type="text" id="user-name" placeholder="이름">
-                <input type="date" id="user-birth">
-            </div>
-            <input type="text" id="user-q" placeholder="무엇이 궁금하신가요?">
-            <div style="margin-top:20px;">
-                <div class="mode-card" onclick="startTarot(1)"><h3>오늘의 운세 (1장)</h3></div>
-                <div class="mode-card" onclick="startTarot(3)"><h3>과거·현재·미래 (3장)</h3></div>
-            </div>
+        <div id="input-step">
+            <input type="text" id="user-name" placeholder="당신의 이름">
+            <input type="text" id="user-q" placeholder="무엇이 궁금하십니까?">
+            <div class="mode-card" onclick="startTarot(1)">오늘의 조언 (1장)</div>
+            <div class="mode-card" onclick="startTarot(3)">과거/현재/미래 (3장)</div>
         </div>
-
-        <div id="step-tarot" style="display:none;">
+        <div id="tarot-step" style="display:none;">
             <div class="cards-container" id="cards-box"></div>
-            <div class="result-text" id="status-msg">카드를 클릭하여 운명을 확인하세요.</div>
-            <button id="interpret-btn" class="btn" style="display:none;" onclick="getAIInterpretation()">운명의 해석 듣기</button>
-            <button class="btn" style="background:#444; color:white;" onclick="location.reload()">처음으로</button>
+            <div id="result-box" class="result-text" style="display:none;"></div>
+            <button id="ai-btn" class="btn" style="display:none;" onclick="askAI()">운명의 해석 듣기</button>
+            <button class="btn" style="background:#333; color:white;" onclick="location.reload()">처음으로</button>
         </div>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const imgBase = "https://commons.wikimedia.org/wiki/Special:FilePath/";
 
-        // --- 이미지 리소스 ---
-        const imgBg = new Image();
-        imgBg.src = 'https://img.freepik.com/free-photo/mystical-astrology-scene-with-stars_23-2151243469.jpg';
-        
-        const imgPlayer = new Image();
-        imgPlayer.src = 'https://raw.githubusercontent.com/uheartbeast/youtube-tutorials/master/Action%20RPG/Characters/Player.png';
+        // 이미지 로딩 관리
+        let loadedCount = 0;
+        const totalImages = 3;
+        function imageLoaded() {
+            loadedCount++;
+            if(loadedCount >= totalImages) {
+                document.getElementById('loading').style.display = 'none';
+                requestAnimationFrame(gameLoop);
+            }
+        }
 
-        const imgNpc = new Image();
-        imgNpc.src = 'https://raw.githubusercontent.com/Deykun/Deykun.github.io/master/assets/images/posts/2019-10-14-rpg-maker-vx-ace-character-generator-guide/hero2.png';
+        const bg = new Image();
+        bg.crossOrigin = "anonymous";
+        bg.src = 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=500&h=320&fit=crop';
+        bg.onload = imageLoaded;
+        bg.onerror = imageLoaded; // 에러 나도 실행되게 함
+
+        const hero = new Image();
+        hero.src = 'https://raw.githubusercontent.com/uheartbeast/youtube-tutorials/master/Action%20RPG/Characters/Player.png';
+        hero.onload = imageLoaded;
+        hero.onerror = imageLoaded;
+
+        const npc = new Image();
+        npc.src = 'https://raw.githubusercontent.com/Deykun/Deykun.github.io/master/assets/images/posts/2019-10-14-rpg-maker-vx-ace-character-generator-guide/hero2.png';
+        npc.onload = imageLoaded;
+        npc.onerror = imageLoaded;
 
         let keys = {};
-        const player = { x: 50, y: 180, frame: 0, dir: 0, speed: 4 };
-        const npc = { x: 400, y: 140 };
+        const p = { x: 50, y: 150, f: 0, d: 0, s: 4 };
+        const n = { x: 400, y: 130 };
 
-        function loop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.globalAlpha = 0.7;
-            ctx.drawImage(imgBg, 0, 0, 500, 320);
-            ctx.globalAlpha = 1.0;
+        function gameLoop() {
+            // 배경 그리기
+            if(bg.complete && bg.naturalWidth !== 0) {
+                ctx.drawImage(bg, 0, 0, 500, 320);
+                ctx.fillStyle = "rgba(0,0,0,0.4)";
+                ctx.fillRect(0,0,500,320);
+            } else {
+                ctx.fillStyle = "#1a1a2e";
+                ctx.fillRect(0,0,500,320);
+            }
 
-            // NPC (마법사)
-            if(imgNpc.complete) ctx.drawImage(imgNpc, 32, 0, 32, 32, npc.x, npc.y, 60, 60);
+            // NPC
+            if(npc.complete) ctx.drawImage(npc, 32, 0, 32, 32, n.x, n.y, 60, 60);
 
-            // 이동 처리
+            // 이동
             let moving = false;
-            if (keys['ArrowUp'] && player.y > 90) { player.y -= player.speed; player.dir = 3; moving = true; }
-            if (keys['ArrowDown'] && player.y < 260) { player.y += player.speed; player.dir = 0; moving = true; }
-            if (keys['ArrowLeft'] && player.x > 0) { player.x -= player.speed; player.dir = 1; moving = true; }
-            if (keys['ArrowRight'] && player.x < 440) { player.x += player.speed; player.dir = 2; moving = true; }
+            if(keys['ArrowUp'] && p.y > 80) { p.y -= p.s; p.d = 3; moving = true; }
+            if(keys['ArrowDown'] && p.y < 250) { p.y += p.s; p.d = 0; moving = true; }
+            if(keys['ArrowLeft'] && p.x > 0) { p.x -= p.s; p.d = 1; moving = true; }
+            if(keys['ArrowRight'] && p.x < 440) { p.x += p.s; p.d = 2; moving = true; }
 
-            // 플레이어 그리기
-            if(moving) player.frame = Math.floor(Date.now()/120) % 4; else player.frame = 0;
-            if(imgPlayer.complete) ctx.drawImage(imgPlayer, player.frame*32, player.dir*32, 32, 32, player.x, player.y, 50, 50);
+            // 플레이어
+            if(moving) p.f = Math.floor(Date.now()/120) % 4; else p.f = 0;
+            if(hero.complete) ctx.drawImage(hero, p.f*32, p.d*32, 32, 32, p.x, p.y, 50, 50);
 
-            // 접촉 판정
-            if (Math.hypot(player.x - npc.x, player.y - npc.y) < 45) {
+            // 충돌
+            if(Math.hypot(p.x - n.x, p.y - n.y) < 50) {
                 document.getElementById('game-wrapper').style.display = 'none';
                 document.getElementById('ui-layer').style.display = 'block';
                 return;
             }
-            requestAnimationFrame(loop);
+            requestAnimationFrame(gameLoop);
         }
 
-        // --- 78장 타로 데이터 ---
+        // 타로 데이터 78장
         const tarotData = [
-            {n:"0. 광대", i:"RWS_Tarot_00_Fool.jpg"}, {n:"1. 마법사", i:"RWS_Tarot_01_Magician.jpg"}, {n:"2. 고위 여사제", i:"RWS_Tarot_02_High_Priestess.jpg"},
-            {n:"3. 여황제", i:"RWS_Tarot_03_Empress.jpg"}, {n:"4. 황제", i:"RWS_Tarot_04_Emperor.jpg"}, {n:"5. 교황", i:"RWS_Tarot_05_Hierophant.jpg"},
-            {n:"6. 연인", i:"RWS_Tarot_06_Lovers.jpg"}, {n:"7. 전차", i:"RWS_Tarot_07_Chariot.jpg"}, {n:"8. 힘", i:"RWS_Tarot_08_Strength.jpg"},
-            {n:"9. 은둔자", i:"RWS_Tarot_09_Hermit.jpg"}, {n:"10. 운명의 수레바퀴", i:"RWS_Tarot_10_Wheel_of_Fortune.jpg"}, {n:"11. 정의", i:"RWS_Tarot_11_Justice.jpg"},
-            {n:"12. 매달린 사람", i:"RWS_Tarot_12_Hanged_Man.jpg"}, {n:"13. 죽음", i:"RWS_Tarot_13_Death.jpg"}, {n:"14. 절제", i:"RWS_Tarot_14_Temperance.jpg"},
-            {n:"15. 악마", i:"RWS_Tarot_15_Devil.jpg"}, {n:"16. 탑", i:"RWS_Tarot_16_Tower.jpg"}, {n:"17. 별", i:"RWS_Tarot_17_Star.jpg"},
-            {n:"18. 달", i:"RWS_Tarot_18_Moon.jpg"}, {n:"19. 태양", i:"RWS_Tarot_19_Sun.jpg"}, {n:"20. 심판", i:"RWS_Tarot_20_Judgement.jpg"},
-            {n:"21. 세계", i:"RWS_Tarot_21_World.jpg"}, {n:"완드 에이스", i:"Wands01.jpg"}, {n:"완드 2", i:"Wands02.jpg"},
-            {n:"완드 3", i:"Wands03.jpg"}, {n:"완드 4", i:"Wands04.jpg"}, {n:"완드 5", i:"Wands05.jpg"}, {n:"완드 6", i:"Wands06.jpg"},
-            {n:"완드 7", i:"Wands07.jpg"}, {n:"완드 8", i:"Wands08.jpg"}, {n:"완드 9", i:"Tarot_Nine_of_Wands.jpg"}, {n:"완드 10", i:"Wands10.jpg"},
-            {n:"완드 시종", i:"Wands11.jpg"}, {n:"완드 기사", i:"Wands12.jpg"}, {n:"완드 퀸", i:"Wands13.jpg"}, {n:"완드 킹", i:"Wands14.jpg"},
-            {n:"컵 에이스", i:"Cups01.jpg"}, {n:"컵 2", i:"Cups02.jpg"}, {n:"컵 3", i:"Cups03.jpg"}, {n:"컵 4", i:"Cups04.jpg"},
-            {n:"컵 5", i:"Cups05.jpg"}, {n:"컵 6", i:"Cups06.jpg"}, {n:"컵 7", i:"Cups07.jpg"}, {n:"컵 8", i:"Cups08.jpg"},
-            {n:"컵 9", i:"Cups09.jpg"}, {n:"컵 10", i:"Cups10.jpg"}, {n:"컵 시종", i:"Cups11.jpg"}, {n:"컵 기사", i:"Cups12.jpg"},
-            {n:"컵 퀸", i:"Cups13.jpg"}, {n:"컵 킹", i:"Cups14.jpg"}, {n:"소드 에이스", i:"Swords01.jpg"}, {n:"소드 2", i:"Swords02.jpg"},
-            {n:"소드 3", i:"Swords03.jpg"}, {n:"소드 4", i:"Swords04.jpg"}, {n:"소드 5", i:"Swords05.jpg"}, {n:"소드 6", i:"Swords06.jpg"},
-            {n:"소드 7", i:"Swords07.jpg"}, {n:"소드 8", i:"Swords08.jpg"}, {n:"소드 9", i:"Swords09.jpg"}, {n:"소드 10", i:"Swords10.jpg"},
-            {n:"소드 시종", i:"Swords11.jpg"}, {n:"소드 기사", i:"Swords12.jpg"}, {n:"소드 퀸", i:"Swords13.jpg"}, {n:"소드 킹", i:"Swords14.jpg"},
-            {n:"펜타클 에이스", i:"Pents01.jpg"}, {n:"펜타클 2", i:"Pents02.jpg"}, {n:"펜타클 3", i:"Pents03.jpg"}, {n:"펜타클 4", i:"Pents04.jpg"},
-            {n:"펜타클 5", i:"Pents05.jpg"}, {n:"펜타클 6", i:"Pents06.jpg"}, {n:"펜타클 7", i:"Pents07.jpg"}, {n:"펜타클 8", i:"Pents08.jpg"},
-            {n:"펜타클 9", i:"Pents09.jpg"}, {n:"펜타클 10", i:"Pents10.jpg"}, {n:"펜타클 시종", i:"Pents11.jpg"}, {n:"펜타클 기사", i:"Pents12.jpg"},
-            {n:"펜타클 퀸", i:"Pents13.jpg"}, {n:"펜타클 킹", i:"Pents14.jpg"}
+            {n:"0. 광대", i:"RWS_Tarot_00_Fool.jpg"}, {n:"1. 마법사", i:"RWS_Tarot_01_Magician.jpg"}, {n:"2. 고위여사제", i:"RWS_Tarot_02_High_Priestess.jpg"}, {n:"3. 여황제", i:"RWS_Tarot_03_Empress.jpg"}, {n:"4. 황제", i:"RWS_Tarot_04_Emperor.jpg"}, {n:"5. 교황", i:"RWS_Tarot_05_Hierophant.jpg"}, {n:"6. 연인", i:"RWS_Tarot_06_Lovers.jpg"}, {n:"7. 전차", i:"RWS_Tarot_07_Chariot.jpg"}, {n:"8. 힘", i:"RWS_Tarot_08_Strength.jpg"}, {n:"9. 은둔자", i:"RWS_Tarot_09_Hermit.jpg"}, {n:"10. 운명의 수레바퀴", i:"RWS_Tarot_10_Wheel_of_Fortune.jpg"}, {n:"11. 정의", i:"RWS_Tarot_11_Justice.jpg"}, {n:"12. 매달린 사람", i:"RWS_Tarot_12_Hanged_Man.jpg"}, {n:"13. 죽음", i:"RWS_Tarot_13_Death.jpg"}, {n:"14. 절제", i:"RWS_Tarot_14_Temperance.jpg"}, {n:"15. 악마", i:"RWS_Tarot_15_Devil.jpg"}, {n:"16. 탑", i:"RWS_Tarot_16_Tower.jpg"}, {n:"17. 별", i:"RWS_Tarot_17_Star.jpg"}, {n:"18. 달", i:"RWS_Tarot_18_Moon.jpg"}, {n:"19. 태양", i:"RWS_Tarot_19_Sun.jpg"}, {n:"20. 심판", i:"RWS_Tarot_20_Judgement.jpg"}, {n:"21. 세계", i:"RWS_Tarot_21_World.jpg"},
+            {n:"완드 에이스", i:"Wands01.jpg"}, {n:"완드 2", i:"Wands02.jpg"}, {n:"완드 3", i:"Wands03.jpg"}, {n:"완드 4", i:"Wands04.jpg"}, {n:"완드 5", i:"Wands05.jpg"}, {n:"완드 6", i:"Wands06.jpg"}, {n:"완드 7", i:"Wands07.jpg"}, {n:"완드 8", i:"Wands08.jpg"}, {n:"완드 9", i:"Tarot_Nine_of_Wands.jpg"}, {n:"완드 10", i:"Wands10.jpg"}, {n:"완드 시종", i:"Wands11.jpg"}, {n:"완드 기사", i:"Wands12.jpg"}, {n:"완드 퀸", i:"Wands13.jpg"}, {n:"완드 킹", i:"Wands14.jpg"},
+            {n:"컵 에이스", i:"Cups01.jpg"}, {n:"컵 2", i:"Cups02.jpg"}, {n:"컵 3", i:"Cups03.jpg"}, {n:"컵 4", i:"Cups04.jpg"}, {n:"컵 5", i:"Cups05.jpg"}, {n:"컵 6", i:"Cups06.jpg"}, {n:"컵 7", i:"Cups07.jpg"}, {n:"컵 8", i:"Cups08.jpg"}, {n:"컵 9", i:"Cups09.jpg"}, {n:"컵 10", i:"Cups10.jpg"}, {n:"컵 시종", i:"Cups11.jpg"}, {n:"컵 기사", i:"Cups12.jpg"}, {n:"컵 퀸", i:"Cups13.jpg"}, {n:"컵 킹", i:"Cups14.jpg"},
+            {n:"소드 에이스", i:"Swords01.jpg"}, {n:"소드 2", i:"Swords02.jpg"}, {n:"소드 3", i:"Swords03.jpg"}, {n:"소드 4", i:"Swords04.jpg"}, {n:"소드 5", i:"Swords05.jpg"}, {n:"소드 6", i:"Swords06.jpg"}, {n:"소드 7", i:"Swords07.jpg"}, {n:"소드 8", i:"Swords08.jpg"}, {n:"소드 9", i:"Swords09.jpg"}, {n:"소드 10", i:"Swords10.jpg"}, {n:"소드 시종", i:"Swords11.jpg"}, {n:"소드 기사", i:"Swords12.jpg"}, {n:"소드 퀸", i:"Swords13.jpg"}, {n:"소드 킹", i:"Swords14.jpg"},
+            {n:"펜타클 에이스", i:"Pents01.jpg"}, {n:"펜타클 2", i:"Pents02.jpg"}, {n:"펜타클 3", i:"Pents03.jpg"}, {n:"펜타클 4", i:"Pents04.jpg"}, {n:"펜타클 5", i:"Pents05.jpg"}, {n:"펜타클 6", i:"Pents06.jpg"}, {n:"펜타클 7", i:"Pents07.jpg"}, {n:"펜타클 8", i:"Pents08.jpg"}, {n:"펜타클 9", i:"Pents09.jpg"}, {n:"펜타클 10", i:"Pents10.jpg"}, {n:"펜타클 시종", i:"Pents11.jpg"}, {n:"펜타클 기사", i:"Pents12.jpg"}, {n:"펜타클 퀸", i:"Pents13.jpg"}, {n:"펜타클 킹", i:"Pents14.jpg"}
         ];
 
         let selected = [];
@@ -188,59 +161,43 @@
 
         function startTarot(n) {
             total = n; selected = [];
-            document.getElementById('step-input').style.display = 'none';
-            document.getElementById('step-tarot').style.display = 'block';
+            document.getElementById('input-step').style.display = 'none';
+            document.getElementById('tarot-step').style.display = 'block';
             const box = document.getElementById('cards-box');
             box.innerHTML = '';
             for(let i=0; i<n; i++) {
-                box.innerHTML += `
-                <div class="card-wrapper">
-                    <div class="card-inner" onclick="flip(this, ${i})">
-                        <div class="card-face card-front">✦</div>
-                        <div class="card-face card-back" id="card-${i}"></div>
-                    </div>
-                </div>`;
+                box.innerHTML += `<div class="card-inner" id="card-inner-${i}" onclick="flip(${i})"><div class="card-face card-front">✦</div><div class="card-face card-back" id="back-${i}"></div></div>`;
             }
         }
 
-        function flip(el, idx) {
+        function flip(idx) {
+            const el = document.getElementById(`card-inner-${idx}`);
             if(el.classList.contains('is-flipped')) return;
-            const data = tarotData[Math.floor(Math.random()*tarotData.length)];
-            const isRev = Math.random() > 0.35;
-            document.getElementById(`card-${idx}`).innerHTML = `<img src="https://commons.wikimedia.org/wiki/Special:FilePath/${data.i}" style="${isRev?'transform:rotate(180deg)':''}">`;
+            const card = tarotData[Math.floor(Math.random()*tarotData.length)];
+            const rev = Math.random() > 0.3;
+            document.getElementById(`back-${idx}`).innerHTML = `<img src="${imgBase}${card.i}" style="${rev?'transform:rotate(180deg)':''}">`;
             el.classList.add('is-flipped');
-            selected.push(data.n + (isRev?"(역방향)":"(정방향)"));
-            if(selected.length === total) {
-                document.getElementById('interpret-btn').style.display = 'block';
-                document.getElementById('status-msg').innerText = "카드를 모두 뽑으셨군요. 해석을 준비합니다.";
-            }
+            selected.push(card.n + (rev?"(역)":"(정)"));
+            if(selected.length === total) document.getElementById('ai-btn').style.display = 'block';
         }
 
-        async function getAIInterpretation() {
-            const msg = document.getElementById('status-msg');
-            msg.innerText = "🔮 우주의 기운을 모아 해석하는 중입니다...";
-            document.getElementById('interpret-btn').style.display = 'none';
-
+        async function askAI() {
+            const box = document.getElementById('result-box');
+            box.style.display = 'block'; box.innerText = "🔮 운명의 해석을 불러오는 중...";
+            document.getElementById('ai-btn').style.display = 'none';
             try {
                 const res = await fetch('/api/read', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        name: document.getElementById('user-name').value || "익명의 여행자",
-                        question: document.getElementById('user-q').value || "전체운",
-                        cards: selected
-                    })
+                    body: JSON.stringify({ name: document.getElementById('user-name').value, question: document.getElementById('user-q').value, cards: selected })
                 });
                 const data = await res.json();
-                msg.innerText = data.text;
-            } catch (e) {
-                msg.innerText = "해석을 가져오는 데 오류가 발생했습니다. 하지만 당신의 앞날엔 빛이 가득할 것입니다.";
-            }
+                box.innerText = data.text;
+            } catch(e) { box.innerText = "통신에 오류가 생겼지만, 당신의 카드 기운은 매우 맑습니다. [" + selected.join(", ") + "]"; }
         }
 
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
-        imgBg.onload = loop;
     </script>
 </body>
 </html>
